@@ -124,3 +124,23 @@ export const logoutAll = async (req: Request, res: Response) => {
   clearAuthCookies(res);
   res.json({ success: true });
 };
+
+export const me = async (req: Request, res: Response) => {
+    if (!req.userId) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+  const user = await prisma.user.findUnique({
+    where: { id: req.userId },
+    select: {
+      id: true,
+      email: true,
+      createdAt: true,
+    },
+  });
+
+  if (!user) {
+    return res.status(404).json({ message: "User not found" });
+  }
+
+  res.json(user);
+};
