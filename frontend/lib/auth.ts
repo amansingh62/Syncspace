@@ -1,8 +1,28 @@
-export async function getCurrentUser() {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/me`, {
-        cache: "no-store",
+export async function apiFetch(
+  input: RequestInfo,
+  init: RequestInit = {}
+) {
+  let res = await fetch(input, {
+    ...init,
+    credentials: "include",
+  });
+
+  if (res.status === 401) {
+    const refresh = await fetch("/api/auth/refresh", {
+      method: "POST",
+      credentials: "include",
     });
 
-    if(!res.ok) return null;
-    return res.json();
+    if (!refresh.ok) {
+      window.location.href = "/login";
+      throw new Error("Session expired");
+    }
+
+    res = await fetch(input, {
+      ...init,
+      credentials: "include",
+    });
+  }
+
+  return res;
 }
