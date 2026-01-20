@@ -5,7 +5,7 @@ export const setAuthCookies = (res: Response, accessToken: string, refreshToken:
         httpOnly: true,
         secure: false,
         sameSite: "lax",
-        maxAge: 2 * 60 * 1000,
+        maxAge: 15 * 60 * 1000,
         path: "/", 
     });
 

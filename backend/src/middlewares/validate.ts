@@ -14,6 +14,5 @@ export const validate =
         errors: result.error.issues,
       });
     }
-
     next();
   };
