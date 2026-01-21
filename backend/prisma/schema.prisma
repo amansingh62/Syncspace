@@ -7,11 +7,53 @@ datasource db {
   provider = "postgresql"
 }
 
-
 model User {
    id         String    @id @default(uuid())   
    name       String 
    email      String    @unique
-   password  String    
+   password   String    
    createdAt  DateTime    @default(now())
+
+   memberships  WorkspaceMember[]
+}
+
+enum WorkspaceRole {
+  OWNER
+  ADMIN
+  MEMBER
+}
+
+model Workspace {
+  id         String    @id  @default(uuid())
+  name       String
+  createdAt  DateTime  @default(now())
+
+  members   WorkspaceMember[]
+  invites   WorkspaceInvite[]
+}
+
+model WorkspaceMember {
+  id           String    @id  @default(uuid())
+  userId       String   
+  workspaceId  String
+  role         WorkspaceRole
+  joinedAt     DateTime  @default(now())
+
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  workspace    Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, workspaceId])
+}
+
+model WorkspaceInvite {
+  id           String    @id  @default(uuid())
+  workspaceId  String
+  email        String
+  token        String    @unique
+  expiresAt   DateTime
+  createdAt   DateTime @default(now())
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@unique([workspaceId, email])
 }
