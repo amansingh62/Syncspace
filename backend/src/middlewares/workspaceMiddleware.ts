@@ -6,12 +6,14 @@ export const requireWorkspaceMember = async (req: Request, res: Response, next: 
 
     if(typeof workspaceId !== "string") return res.status(400).json({ message: "Invalid workspace" });
 
-    const member = await prisma.workspaceMember.findFirst({
-        where: {
+    const member = await prisma.workspaceMember.findUnique({
+         where: {
+            userId_workspaceId: {  
             userId: req.userId!,
             workspaceId,
-        },
-    });
+    },
+  },
+});
 
     if(!member) return res.status(403).json({ message: "Not a workspace member" });
 

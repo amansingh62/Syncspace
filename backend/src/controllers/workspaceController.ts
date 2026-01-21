@@ -51,54 +51,89 @@ export const listWorkspaces = async (req: Request, res: Response) => {
 };
 
 export const inviteMember = async (req: Request, res: Response) => {
-    const { email } = req.body;
-    const { workspaceId } = req.params;
+  const { email } = req.body;
+  const { workspaceId } = req.params;
 
   if (typeof workspaceId !== "string") {
-    return res.status(400).json({ message: "Invalid workspaceId" });
+    return res.status(400).json({ message: "Invalid workspace" });
   }
 
   if (!email) {
     return res.status(400).json({ message: "Email is required" });
   }
 
-    const token = crypto.randomUUID();
+  const existingInvite = await prisma.workspaceInvite.findUnique({
+    where: {
+      workspaceId_email: {
+        workspaceId,
+        email,
+      },
+    },
+  });
 
-    const invite = await prisma.workspaceInvite.create({
-        data: {
-            workspaceId,
-            email,
-            token,
-            expiresAt: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
-        },
+  if (existingInvite) {
+    return res.status(400).json({
+      message: "User already invited to this workspace",
     });
+  }
 
-    res.status(201).json({ token });
-}
+  const token = crypto.randomUUID();
+
+  const invite = await prisma.workspaceInvite.create({
+    data: {
+      workspaceId,
+      email,
+      token,
+      expiresAt: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
+    },
+  });
+
+  return res.status(201).json({ token });
+};
 
 export const acceptInvite = async (req: Request, res: Response) => {
-    const { token } = req.params;
+  const { token } = req.params;
 
-    if (typeof token !== "string") {
+  if (typeof token !== "string") {
     return res.status(400).json({ message: "Invalid invite token" });
   }
-    if (typeof token !== "string") {
-    return res.status(400).json({ message: "Invalid invite token" });
+
+  if (!req.userId) {
+    return res.status(401).json({ message: "Unauthorized" });
   }
-  
-    const invite = await prisma.workspaceInvite.findUnique({
-        where: { token },
-    });
 
-    if(!invite || invite.expiresAt < new Date()) {
-        return res.status(400).json({ message: "Invalid invite" });
-    }
+  const invite = await prisma.workspaceInvite.findUnique({
+    where: { token },
+  });
 
-    await prisma.workspaceMember.create({
-        data: {
-            userId: req.userId!,
-            workspaceId: invite.workspaceId,
-            role: "MEMBER"
-        },
-    });
-}
+  if (!invite || invite.expiresAt < new Date()) {
+    return res.status(400).json({ message: "Invalid or expired invite" });
+  }
+
+  const alreadyMember = await prisma.workspaceMember.findUnique({
+    where: {
+      userId_workspaceId: {
+        userId: req.userId,
+        workspaceId: invite.workspaceId,
+      },
+    },
+  });
+
+  if (alreadyMember) {
+    return res.status(400).json({ message: "Already a workspace member" });
+  }
+
+  await prisma.workspaceMember.create({
+    data: {
+      userId: req.userId,
+      workspaceId: invite.workspaceId,
+      role: "MEMBER",
+    },
+  });
+
+  await prisma.workspaceInvite.delete({
+    where: { id: invite.id },
+  });
+
+  return res.json({ success: true });
+};

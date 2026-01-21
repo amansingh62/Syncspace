@@ -1,5 +1,6 @@
 "use client";
 
+import { LogoutButton } from "@/components/LogoutButton";
 import { apiFetch } from "@/lib/auth";
 
 export default function CreateWorkspacePage() {
@@ -12,8 +13,12 @@ export default function CreateWorkspacePage() {
   };
 
   return (
+   <>
     <button onClick={createWorkspace} className="ml-[47%] text-2xl mt-10">
       Create
     </button>
+
+    <LogoutButton />
+   </>
   );
 }
