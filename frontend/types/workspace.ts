@@ -27,6 +27,7 @@ export interface CreateWorkspaceResponse {
 export interface WorkspaceMemberResponse {
   id: string;
   role: "OWNER" | "ADMIN" | "MEMBER";
+  isCurrentUser: boolean;
   user: {
     id: string;
     name: string;
