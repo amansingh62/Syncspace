@@ -1,24 +1,52 @@
 "use client";
 
-import { LogoutButton } from "@/components/LogoutButton";
-import { apiFetch } from "@/lib/auth";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { createWorkspace } from "@/lib/workspace.client";
+import type { CreateWorkspaceResponse } from "../../../../../../types/workspace";
 
 export default function CreateWorkspacePage() {
-  const createWorkspace = async () => {
-    await apiFetch("/api/workspaces", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name: "My Workspace" }),
-    });
+  const router = useRouter();
+  const [name, setName] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const submit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+
+    try {
+      const workspace: CreateWorkspaceResponse = await createWorkspace(name);
+      router.push(`/app/workspaces/${workspace.id}`);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to create workspace");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-   <>
-    <button onClick={createWorkspace} className="ml-[47%] text-2xl mt-10">
-      Create
-    </button>
+    <main style={{ padding: 32 }}>
+      <h1>Create Workspace</h1>
 
-    <LogoutButton />
-   </>
+      <form onSubmit={submit}>
+        <input
+          type="text"
+          placeholder="Workspace name"
+          value={name}
+          onChange={e => setName(e.target.value)}
+          required
+        />
+
+        <div className="mt-10">
+          <button type="submit" disabled={loading}>
+            {loading ? "Creating..." : "Create"}
+          </button>
+        </div>
+
+        {error && <p style={{ color: "red" }}>{error}</p>}
+      </form>
+    </main>
   );
 }

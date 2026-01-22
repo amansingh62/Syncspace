@@ -36,18 +36,20 @@ export const createWorkspace = async (req: Request, res: Response) => {
 };
 
 export const listWorkspaces = async (req: Request, res: Response) => {
-    const workspaces = await prisma.workspaceMember.findMany({ 
+    const members = await prisma.workspaceMember.findMany({ 
         where: { userId: req.userId! },
         include: {
-            workspace: true,
+            workspace: {
+        select: {
+          id: true,
+          name: true,
+        },
+      },
         },
     });
 
-    res.json(workspaces.map(w => ({
-        id: w.workspace.id,
-        name: w.workspace.name,
-        role: w.role,
-    })));
+      res.json(members);
+
 };
 
 export const inviteMember = async (req: Request, res: Response) => {

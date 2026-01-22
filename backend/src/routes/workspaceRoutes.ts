@@ -8,7 +8,7 @@ const router = Router();
 
 router.post("/", requireAuth, createWorkspace);
 router.get("/", requireAuth, listWorkspaces);
-router.post("/:workspaceId/invites", requireAuth, requireWorkspaceMember, requireRole(["OWNER", "ADMIN"]), inviteMember);
+router.post("/:workspaceId/invite", requireAuth, requireWorkspaceMember, requireRole(["OWNER", "ADMIN"]), inviteMember);
 router.post("/invite/:token", requireAuth, acceptInvite);
 
 export default router;

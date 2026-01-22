@@ -18,6 +18,6 @@ app.use(express.json());
 app.use(cookieParser());
 
 app.use("/api/auth", authRoutes);
-app.use("/app/workspaces/new", workspaceRoutes)
+app.use("/api/workspaces", workspaceRoutes)
 
 export default app;
