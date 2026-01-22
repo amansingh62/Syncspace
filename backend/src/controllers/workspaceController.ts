@@ -139,3 +139,46 @@ export const acceptInvite = async (req: Request, res: Response) => {
 
   return res.json({ success: true });
 };
+
+export const getWorkspaceMembers = async (req: Request, res: Response) => {
+  const { workspaceId } = req.params;
+  const userId = req.userId!;
+ 
+  if(typeof workspaceId !== "string") return res.status(400).json({ message: "Invalid workspace" });
+  const membership = await prisma.workspaceMember.findUnique({
+    where: {
+      userId_workspaceId: {
+        userId,
+        workspaceId,
+      }
+    }
+  });
+
+  if(!membership) return res.status(403).json({ message: "Not a workspace member" });
+
+  const members = await prisma.workspaceMember.findMany({
+    where: {
+      workspaceId
+    },
+    include: {
+      user: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+        },
+      },
+    },
+    orderBy: { 
+      role: "asc",
+    },
+  });
+
+  return res.json(
+    members.map(m => ({
+      id: m.id,
+      role: m.role,
+      user: m.user,
+    }))
+  );
+};
