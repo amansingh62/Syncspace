@@ -1,7 +1,7 @@
 import { fetchWorkspaces } from "@/lib/workspace.server";
 import Link from "next/link";
 import { LogoutButton } from "@/components/LogoutButton";
-import type { WorkspaceMember } from "../../../../types/workspace";
+import type { WorkspaceMember } from "../../../types/workspace";
 
 export default async function WorkspaceSelectorPage() {
   const workspaces: WorkspaceMember[] = await fetchWorkspaces();
@@ -16,7 +16,7 @@ export default async function WorkspaceSelectorPage() {
         <ul>
           {workspaces.map(ws => (
             <li key={ws.id}>
-              <Link href={`/app/workspaces/${ws.workspaceId}`}>
+              <Link href={`/app/workspaces/${ws.workspace.id}`}>
                 {ws.workspace.name} ({ws.role})
               </Link>
             </li>

@@ -1,4 +1,4 @@
-import type { CreateWorkspaceResponse } from "../../types/workspace";
+import type { CreateWorkspaceResponse } from "../types/workspace";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL!;
 

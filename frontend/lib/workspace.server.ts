@@ -1,5 +1,5 @@
 import { cookies } from "next/headers";
-import type { WorkspaceMember } from "../../types/workspace";
+import type { WorkspaceMember, WorkspaceMemberResponse } from "../types/workspace";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL!;
 
@@ -20,5 +20,30 @@ export async function fetchWorkspaces(): Promise<WorkspaceMember[]> {
   });
 
   if (!res.ok) return [];
+  return res.json();
+}
+
+export async function fetchWorkspaceMembers(
+  workspaceId: string
+): Promise<WorkspaceMemberResponse[]> {
+
+  const res = await fetch(
+    `${API_URL}/api/workspaces/${workspaceId}/members`,
+    {
+      method: "GET",
+      headers: {
+        cookie: await getCookieHeader(),
+      },
+      cache: "no-store",
+    }
+  );
+
+  if (!res.ok) {
+  const text = await res.text();
+  throw new Error(
+    `Failed to fetch workspace members: ${res.status} ${text}`
+  );
+}
+
   return res.json();
 }
