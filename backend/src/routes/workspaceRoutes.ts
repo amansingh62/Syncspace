@@ -5,6 +5,7 @@ import { requireRole } from "../middlewares/roleGuardMiddleware.js";
 import { acceptInvite, changeMemberRole, createWorkspace, 
          getMyInvite, 
          getWorkspaceMembers, inviteMember, leaveWorkspace, listWorkspaces,
+         rejectInvite,
          removeMember } from "../controllers/workspaceController.js";
 
 const router = Router();
@@ -19,6 +20,7 @@ router.delete("/:workspaceId/members/:memberId", requireAuth, removeMember);
 router.post("/:workspaceId/invite", requireAuth, requireWorkspaceMember, requireRole(["OWNER", "ADMIN"]), inviteMember);
 router.post("/invite/:token/accept", requireAuth, acceptInvite);
 router.get("/invite", requireAuth, getMyInvite);
+router.delete("/invite/:token", requireAuth, rejectInvite);
 
 router.delete("/:workspaceId/leave", requireAuth, leaveWorkspace);
 

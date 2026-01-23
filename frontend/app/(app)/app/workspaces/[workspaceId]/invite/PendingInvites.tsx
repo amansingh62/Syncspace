@@ -50,6 +50,17 @@ useEffect(() => {
     loadInvites();
 }, [loadInvites]);
 
+  async function reject(token: string) {
+    if(!confirm("Reject this workspace invitation")) return;
+
+    await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/workspaces/invite/${token}`, {
+        method: "DELETE",
+        credentials: "include"
+    });
+
+    loadInvites();
+  };
+
      if (invites.length === 0) return null;
 
   return (
@@ -61,6 +72,7 @@ useEffect(() => {
           <li key={invite.id}>
             Invited to <strong>{invite.workspace.name}</strong>
             <button onClick={() => accept(invite.token)}>Accept</button>
+             <button onClick={() => reject(invite.token)}>Reject</button>
           </li>
         ))}
       </ul>

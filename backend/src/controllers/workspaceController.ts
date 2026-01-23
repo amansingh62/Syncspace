@@ -170,7 +170,36 @@ export const getMyInvite = async (req: Request, res: Response) => {
     });
 
     return res.json(invites);
-}
+};
+
+export const rejectInvite = async (req: Request, res: Response) => {
+  const { token } = req.params;
+  const userId = req.userId!;
+
+  if(typeof token !== "string") return res.status(400).json({ message: "Invalid invite Token" });
+
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { email: true }
+  });
+
+   if(!user) return res.status(401).json({ message: "Unauthorize" });
+
+   const invite = await prisma.workspaceInvite.findUnique({
+    where: { token },
+   });
+
+   if (!invite || invite.email !== user.email) {
+    return res.status(404).json({ message: "Invite not found" });
+  };
+
+  await prisma.workspaceInvite.delete({
+    where: { id: invite.id }
+  });
+
+  return res.json({ success: true });
+  
+};
 
 export const getWorkspaceMembers = async (req: Request, res: Response) => {
   const { workspaceId } = req.params;
@@ -309,7 +338,7 @@ export const removeMember = async (req: Request, res: Response) => {
   });
 
   return res.json({ success: true });
-}
+};
 
 export const leaveWorkspace = async (req: Request, res: Response) => {
   const { workspaceId } = req.params;
@@ -335,4 +364,4 @@ export const leaveWorkspace = async (req: Request, res: Response) => {
   });
 
   res.json({ success: "true" });
-}
+};
