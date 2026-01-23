@@ -1,6 +1,7 @@
 import { fetchWorkspaceMembers } from "@/lib/workspace.server";
 import InviteMemberForm from "./InviteMember";
 import MemberActions from "./MemberActions";
+import LeaveWorkspaceButton from "./LeaveWorkspaceButton";
 
 export default async function MembersPage({
   params,
@@ -29,6 +30,10 @@ export default async function MembersPage({
       </ul>
 
       <InviteMemberForm workspaceId={workspaceId} />
+
+      {members.some(m => m.isCurrentUser && m.role !== "OWNER") && (
+        <LeaveWorkspaceButton workspaceId={workspaceId} />
+      )}
     </>
   );
 }
