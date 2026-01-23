@@ -140,6 +140,38 @@ export const acceptInvite = async (req: Request, res: Response) => {
   return res.json({ success: true });
 };
 
+export const getMyInvite = async (req: Request, res: Response) => {
+  const userId = req.userId!;
+
+  const user = await prisma.user.findUnique({
+    where: {
+      id: userId,
+    },
+    select: {
+      email: true
+    },
+  });
+
+  if (!user) {
+    return res.status(404).json({ message: "User not found" });
+  }
+
+    const invites = await prisma.workspaceInvite.findMany({
+      where: {
+        email: user.email,
+        expiresAt: { gt: new Date() },
+      },
+
+      include: {
+        workspace: {
+          select: { id: true, name: true },
+        },
+      },
+    });
+
+    return res.json(invites);
+}
+
 export const getWorkspaceMembers = async (req: Request, res: Response) => {
   const { workspaceId } = req.params;
   const userId = req.userId!;

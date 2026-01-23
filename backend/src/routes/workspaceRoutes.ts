@@ -3,6 +3,7 @@ import { requireAuth } from "../middlewares/authMiddleware.js";
 import { requireWorkspaceMember } from "../middlewares/workspaceMiddleware.js";
 import { requireRole } from "../middlewares/roleGuardMiddleware.js";
 import { acceptInvite, changeMemberRole, createWorkspace, 
+         getMyInvite, 
          getWorkspaceMembers, inviteMember, leaveWorkspace, listWorkspaces,
          removeMember } from "../controllers/workspaceController.js";
 
@@ -16,7 +17,8 @@ router.patch("/:workspaceId/members/:memberId/role", requireAuth, changeMemberRo
 router.delete("/:workspaceId/members/:memberId", requireAuth, removeMember);
 
 router.post("/:workspaceId/invite", requireAuth, requireWorkspaceMember, requireRole(["OWNER", "ADMIN"]), inviteMember);
-router.post("/invite/:token", requireAuth, acceptInvite);
+router.post("/invite/:token/accept", requireAuth, acceptInvite);
+router.get("/invite", requireAuth, getMyInvite);
 
 router.delete("/:workspaceId/leave", requireAuth, leaveWorkspace);
 
