@@ -3,6 +3,7 @@ import { requireAuth } from "../middlewares/authMiddleware.js";
 import { requireWorkspaceMember } from "../middlewares/workspaceMiddleware.js";
 import { requireRole } from "../middlewares/roleGuardMiddleware.js";
 import { acceptInvite, changeMemberRole, createWorkspace, 
+         deleteWorkspace, 
          getMyInvite, 
          getWorkspaceMembers, inviteMember, leaveWorkspace, listWorkspaces,
          rejectInvite,
@@ -23,5 +24,6 @@ router.get("/invite", requireAuth, getMyInvite);
 router.delete("/invite/:token", requireAuth, rejectInvite);
 
 router.delete("/:workspaceId/leave", requireAuth, leaveWorkspace);
+router.delete("/:workspaceId/delete", requireAuth, deleteWorkspace);
 
 export default router;

@@ -2,6 +2,7 @@ import { fetchWorkspaceMembers } from "@/lib/workspace.server";
 import InviteMemberForm from "./InviteMember";
 import MemberActions from "./MemberActions";
 import LeaveWorkspaceButton from "./LeaveWorkspaceButton";
+import DeleteWorkspaceButton from "./DeleteWorkspaceButton";
 
 export default async function MembersPage({
   params,
@@ -10,6 +11,7 @@ export default async function MembersPage({
 }) {
   const { workspaceId } = await params;
   const members = await fetchWorkspaceMembers(workspaceId);
+  const currentMember = members.find(m => m.isCurrentUser);
 
   return (
     <>
@@ -31,9 +33,13 @@ export default async function MembersPage({
 
       <InviteMemberForm workspaceId={workspaceId} />
 
-      {members.some(m => m.isCurrentUser && m.role !== "OWNER") && (
-        <LeaveWorkspaceButton workspaceId={workspaceId} />
-      )}
+     {currentMember && (
+      currentMember.role === "OWNER" ? (
+    <DeleteWorkspaceButton workspaceId={workspaceId} />
+  ) : (
+    <LeaveWorkspaceButton workspaceId={workspaceId} />
+  )
+)}
     </>
   );
 }

@@ -198,7 +198,7 @@ export const rejectInvite = async (req: Request, res: Response) => {
   });
 
   return res.json({ success: true });
-  
+
 };
 
 export const getWorkspaceMembers = async (req: Request, res: Response) => {
@@ -364,4 +364,29 @@ export const leaveWorkspace = async (req: Request, res: Response) => {
   });
 
   res.json({ success: "true" });
+};
+
+export const deleteWorkspace = async (req: Request, res: Response) => {
+   const { workspaceId } = req.params;
+   const userId = req.userId!;
+
+   if(typeof workspaceId !== "string") return res.status(404).json({ message: "Invalid workspace"});
+
+   const membership = await prisma.workspaceMember.findUnique({
+    where: {
+      userId_workspaceId: {
+        workspaceId, userId
+      }
+    }
+   });
+
+   if(!membership) return res.status(403).json({ message: "Not a workspace member" });
+
+   if(membership.role !== "OWNER") return res.status(403).json({ message: "Only owner can delete workspace" });
+
+   await prisma.workspace.delete({
+    where: { id: workspaceId}
+   });
+
+   res.json({ success: true });
 };
