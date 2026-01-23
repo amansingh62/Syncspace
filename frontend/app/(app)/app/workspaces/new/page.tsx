@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createWorkspace } from "@/lib/workspace.client";
-import type { CreateWorkspaceResponse } from "../../../../../../types/workspace";
+import type { CreateWorkspaceResponse } from "../../../../../types/workspace";
 
 export default function CreateWorkspacePage() {
   const router = useRouter();

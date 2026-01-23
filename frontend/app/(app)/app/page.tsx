@@ -2,6 +2,7 @@ import { fetchWorkspaces } from "@/lib/workspace.server";
 import Link from "next/link";
 import { LogoutButton } from "@/components/LogoutButton";
 import type { WorkspaceMember } from "../../../types/workspace";
+import PendingInvites from "./workspaces/[workspaceId]/invite/PendingInvites";
 
 export default async function WorkspaceSelectorPage() {
   const workspaces: WorkspaceMember[] = await fetchWorkspaces();
@@ -25,6 +26,7 @@ export default async function WorkspaceSelectorPage() {
       )}
 
       <Link href="/app/workspaces/new">➕ Create new workspace</Link>
+      <PendingInvites />
       <LogoutButton />
     </>
   );

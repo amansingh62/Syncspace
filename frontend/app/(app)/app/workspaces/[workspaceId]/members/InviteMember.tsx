@@ -15,7 +15,7 @@ export default function InviteMemberForm({
     setMessage("");
 
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/workspaces/${workspaceId}/invite`,
+      `${process.env.NEXT_PUBLIC_API_URL}/api/workspaces/${workspaceId}/invite/accept`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
