@@ -3,7 +3,7 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import authRoutes from "./routes/authRoutes.js";
 import workspaceRoutes from "./routes/workspaceRoutes.js";
-import docRouter from "./routes/docRoutes.js";
+import docRouters from "./routes/docRoutes.js";
 import { env } from "./config/env.js";
 
 const app = express();
@@ -20,6 +20,6 @@ app.use(cookieParser());
 
 app.use("/api/auth", authRoutes);
 app.use("/api/workspaces", workspaceRoutes);
-app.use("/api/workspaces", docRouter);
+app.use("/api/workspaces", docRouters);
 
 export default app;

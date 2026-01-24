@@ -57,3 +57,33 @@ export const listDoc = async (req: Request, res: Response) => {
 
     res.json(docs);
 };
+
+export const getDoc = async (req: Request, res: Response) => {
+    const { workspaceId, docId } = req.params;
+    const userId = req.userId!;
+
+    if(typeof workspaceId !== "string" || typeof docId !== "string") return res.status(400).json({ message: "Invalid params" });
+
+    const membership = await prisma.workspaceMember.findUnique({
+        where: {
+            userId_workspaceId: {
+                userId, workspaceId
+            },
+        },
+    });
+
+    if(!membership) return res.status(403).json({ message: "Not a workspace member" });
+
+    const doc = await prisma.doc.findFirst({
+
+        where: {
+            id: docId, workspaceId
+        }
+    });
+
+     if (!doc) {
+    return res.status(404).json({ message: "Doc not found" });
+  }
+
+    res.json(doc);
+};
