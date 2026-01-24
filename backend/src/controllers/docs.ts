@@ -1,0 +1,34 @@
+import type { Request, Response } from "express";
+import { prisma } from "../config/prisma.js";
+
+export const createDoc = async (req: Request, res: Response) => {
+   const { workspaceId } = req.params;
+   const { title } = req.body;
+   const userId = req.userId!;
+
+   if(typeof workspaceId !== "string") return res.status(400).json({ message: "Invalid"});
+
+   if(!title || title.trim().length < 2){
+    return res.status(400).json({ message: "Title too short" });
+   };
+
+   const membership = await prisma.workspaceMember.findUnique({
+    where: {
+        userId_workspaceId: {
+            userId, workspaceId
+        },
+    },
+   });
+
+   if(!membership) return res.status(403).json({ message: "Not a workspace member" });
+
+   const doc = await prisma.doc.create({
+    data: {
+        workspaceId,
+        title: title.trim(),
+    }
+   });
+
+   return res.json(doc);
+}
+

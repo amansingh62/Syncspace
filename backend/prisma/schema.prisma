@@ -30,7 +30,9 @@ model Workspace {
 
   members   WorkspaceMember[]
   invites   WorkspaceInvite[]
+  docs      Doc[]
 }
+
 
 model WorkspaceMember {
   id           String    @id  @default(uuid())
@@ -50,10 +52,23 @@ model WorkspaceInvite {
   workspaceId  String
   email        String
   token        String    @unique
-  expiresAt   DateTime
-  createdAt   DateTime @default(now())
+  expiresAt    DateTime
+  createdAt    DateTime @default(now())
 
   workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
 
   @@unique([workspaceId, email])
+}
+
+model Doc {
+  id          String     @id  @default(uuid())
+  workspaceId String     
+  title       String
+  content     String     @default("")
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  workspace   Workspace  @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId])
 }
