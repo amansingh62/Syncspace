@@ -46,21 +46,14 @@ export async function fetchWorkspaceMembers(
   }
 
   const data = await res.json();
-  
-  // Log to see what we're actually getting
-  console.log('API response:', data);
-  
-  // If the API returns { members: [...] }, extract the array
-  if (data && typeof data === 'object' && 'members' in data) {
+
+    if (data && typeof data === 'object' && 'members' in data) {
     return data.members;
   }
   
-  // If it's already an array, return it
   if (Array.isArray(data)) {
     return data;
   }
-  
-  // Otherwise, something unexpected happened
-  console.error('Unexpected response format:', data);
+
   return [];
 }

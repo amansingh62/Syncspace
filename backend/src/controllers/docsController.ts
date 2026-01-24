@@ -31,7 +31,7 @@ export const createDoc = async (req: Request, res: Response) => {
    });
 
    return res.json(doc);
-}
+};
 
 export const listDoc = async (req: Request, res: Response) => {
     const { workspaceId } = req.params;
@@ -56,7 +56,7 @@ export const listDoc = async (req: Request, res: Response) => {
         orderBy: { updatedAt: "desc"},
     });
 
-    res.json(docs);
+    res.json({docs});
 };
 
 export const getDoc = async (req: Request, res: Response) => {
