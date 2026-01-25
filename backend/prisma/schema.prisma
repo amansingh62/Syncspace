@@ -8,14 +8,16 @@ datasource db {
 }
 
 model User {
-   id         String    @id @default(uuid())   
-   name       String 
-   email      String    @unique
-   password   String    
-   createdAt  DateTime    @default(now())
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
 
-   memberships  WorkspaceMember[]
-   messages     Message[]
+  memberships        WorkspaceMember[]
+  messages           Message[]
+  channelOwnerships  Channel[]         @relation("ChannelOwner")
+  channelMemberships ChannelMember[]
 }
 
 enum WorkspaceRole {
@@ -25,37 +27,36 @@ enum WorkspaceRole {
 }
 
 model Workspace {
-  id         String    @id  @default(uuid())
-  name       String
-  createdAt  DateTime  @default(now())
+  id        String   @id @default(uuid())
+  name      String
+  createdAt DateTime @default(now())
 
-  members   WorkspaceMember[]
-  invites   WorkspaceInvite[]
-  docs      Doc[]
-  channels   Channel[]
+  members  WorkspaceMember[]
+  invites  WorkspaceInvite[]
+  docs     Doc[]
+  channels Channel[]
 }
 
-
 model WorkspaceMember {
-  id           String    @id  @default(uuid())
-  userId       String   
-  workspaceId  String
-  role         WorkspaceRole
-  joinedAt     DateTime  @default(now())
+  id          String        @id @default(uuid())
+  userId      String
+  workspaceId String
+  role        WorkspaceRole
+  joinedAt    DateTime      @default(now())
 
-  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  workspace    Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
 
   @@unique([userId, workspaceId])
 }
 
 model WorkspaceInvite {
-  id           String    @id  @default(uuid())
-  workspaceId  String
-  email        String
-  token        String    @unique
-  expiresAt    DateTime
-  createdAt    DateTime @default(now())
+  id          String   @id @default(uuid())
+  workspaceId String
+  email       String
+  token       String   @unique
+  expiresAt   DateTime
+  createdAt   DateTime @default(now())
 
   workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
 
@@ -63,39 +64,55 @@ model WorkspaceInvite {
 }
 
 model Doc {
-  id          String     @id  @default(uuid())
-  workspaceId String     
+  id          String   @id @default(uuid())
+  workspaceId String
   title       String
-  content     String     @default("")
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
+  content     String   @default("")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
-  workspace   Workspace  @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
 
   @@index([workspaceId])
 }
 
 model Channel {
-  id           String     @id   @default(uuid())
-  workspaceId  String 
-  name         String
-  createdAt    DateTime  @default(now())
+  id          String   @id @default(uuid())
+  workspaceId String
+  ownerId     String?
+  name        String
+  createdAt   DateTime @default(now())
 
-  workspace   Workspace  @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  messages    Message[]
+  workspace Workspace       @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  owner     User?           @relation("ChannelOwner", fields: [ownerId], references: [id])
+  messages  Message[]
+  members   ChannelMember[]
 
   @@unique([workspaceId, name])
 }
 
-model Message {
-  id          String     @id    @default(uuid())
-  channelId   String    
-  userId      String
-  content     String
-  createdAt   DateTime   @default(now())
+model ChannelMember {
+  id       String   @id @default(uuid())
+  channelId String
+  userId   String
+  joinedAt DateTime @default(now())
 
-  channel     Channel    @relation(fields: [channelId], references: [id], onDelete: Cascade)
-  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  channel Channel @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([channelId, userId])
+}
+
+model Message {
+  id        String    @id @default(uuid())
+  channelId String
+  userId    String
+  content   String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
+
+  channel Channel @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([channelId, createdAt])
 }

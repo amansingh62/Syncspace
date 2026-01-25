@@ -315,7 +315,7 @@ export const removeMember = async (req: Request, res: Response) => {
     }
   });
 
-  if(!requester) return res.status(403).json({ message: "Not a workspace member" });
+  if(!requester) return res.status(404).json({ message: "Not a workspace member" });
 
   const target = await prisma.workspaceMember.findUnique({ 
     where: {
@@ -357,7 +357,7 @@ export const leaveWorkspace = async (req: Request, res: Response) => {
 
   if(!membership) return res.status(404).json({ message: "Not a workspace member" });
 
-  if(membership.role == "OWNER") return res.status(400).json({ message: "Owner cannot leave directly" });
+  if(membership.role == "OWNER") return res.status(403).json({ message: "Owner cannot leave directly" });
 
   await prisma.workspaceMember.delete({
     where: { id: membership.id }
@@ -370,7 +370,7 @@ export const deleteWorkspace = async (req: Request, res: Response) => {
    const { workspaceId } = req.params;
    const userId = req.userId!;
 
-   if(typeof workspaceId !== "string") return res.status(404).json({ message: "Invalid workspace"});
+   if(typeof workspaceId !== "string") return res.status(400).json({ message: "Invalid workspace"});
 
    const membership = await prisma.workspaceMember.findUnique({
     where: {
@@ -380,7 +380,7 @@ export const deleteWorkspace = async (req: Request, res: Response) => {
     }
    });
 
-   if(!membership) return res.status(403).json({ message: "Not a workspace member" });
+   if(!membership) return res.status(404).json({ message: "Not a workspace member" });
 
    if(membership.role !== "OWNER") return res.status(403).json({ message: "Only owner can delete workspace" });
 

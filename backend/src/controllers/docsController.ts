@@ -21,7 +21,7 @@ export const createDoc = async (req: Request, res: Response) => {
     },
    });
 
-   if(!membership) return res.status(403).json({ message: "Not a workspace member" });
+   if(!membership) return res.status(404).json({ message: "Not a workspace member" });
 
    const doc = await prisma.doc.create({
     data: {
@@ -47,7 +47,7 @@ export const listDoc = async (req: Request, res: Response) => {
         },
     });
 
-    if(!membership) return res.status(403).json({ message: "Member not found" });
+    if(!membership) return res.status(404).json({ message: "Member not found" });
 
     const docs = await prisma.doc.findMany({
         where: {
@@ -73,7 +73,7 @@ export const getDoc = async (req: Request, res: Response) => {
         },
     });
 
-    if(!membership) return res.status(403).json({ message: "Not a workspace member" });
+    if(!membership) return res.status(404).json({ message: "Not a workspace member" });
 
     const doc = await prisma.doc.findFirst({
 
@@ -105,7 +105,7 @@ export const updateDoc = async (req: Request, res: Response) => {
   });
 
   if (!membership) {
-    return res.status(403).json({ message: "Not a workspace member" });
+    return res.status(404).json({ message: "Not a workspace member" });
   }
 
   const doc = await prisma.doc.findFirst({

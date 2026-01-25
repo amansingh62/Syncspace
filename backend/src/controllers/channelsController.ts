@@ -18,12 +18,13 @@ export const createChannel = async (req: Request, res: Response) => {
     },
    });
 
-   if(!membership) return res.status(403).json({ message: "Not a workspace member" });
+   if(!membership) return res.status(404).json({ message: "Not a workspace member" });
 
    const channel = await prisma.channel.create({
     data: {
         workspaceId,
       name: name.toLowerCase().replace(/\s+/g, "-"),
+      ownerId: userId,
     },
    });
 
@@ -44,7 +45,7 @@ export const listChannels = async (req: Request, res: Response) => {
         },
     });
 
-    if(!membership) return res.status(403).json({ message: "Not a workspace member" });
+    if(!membership) return res.status(404).json({ message: "Not a workspace member" });
 
     const channels = await prisma.channel.findMany({
         where: {
@@ -82,7 +83,7 @@ export const sendMessages = async (req: Request, res: Response) => {
     },
    });
 
-   if(!membership) return res.status(403).json({ message: "Not a workspace member" });
+   if(!membership) return res.status(404).json({ message: "Not a workspace member" });
 
    const message = await prisma.message.create({
     data: {
@@ -111,7 +112,7 @@ export const listMessages = async (req: Request, res: Response) => {
         },
     });
 
-    if(!channel) return res.status(403).json({ message: "Channel not found" });
+    if(!channel) return res.status(404).json({ message: "Channel not found" });
 
     const membership = await prisma.workspaceMember.findUnique({
         where: {
@@ -121,7 +122,7 @@ export const listMessages = async (req: Request, res: Response) => {
         },
     });
 
-    if(!membership) return res.status(403).json({ message: "Not a workspace member" });
+    if(!membership) return res.status(404).json({ message: "Not a workspace member" });
 
     const LIMIT = 20;
 
@@ -159,3 +160,211 @@ export const listMessages = async (req: Request, res: Response) => {
         nextCursor,
     });
 };
+
+export const editMessage = async (req: Request, res: Response) => {
+  const { workspaceId, channelId, messageId } = req.params;
+  const { content } = req.body;
+  const userId = req.userId!;
+
+  if (
+    typeof workspaceId !== "string" ||
+    typeof channelId !== "string" ||
+    typeof messageId !== "string"
+  ) {
+    return res.status(400).json({ message: "Invalid params" });
+  }
+
+  if (!content || content.trim().length === 0) {
+    return res.status(400).json({ message: "Content cannot be empty" });
+  }
+
+  const message = await prisma.message.findFirst({
+    where: {
+      id: messageId,
+      channelId,
+      channel: {
+        workspaceId,
+      },
+    },
+  });
+
+  if (!message) {
+    return res.status(404).json({ message: "Message not found" });
+  }
+
+  const membership = await prisma.workspaceMember.findUnique({
+    where: {
+      userId_workspaceId: {
+        userId,
+        workspaceId,
+      },
+    },
+  });
+
+  if (!membership) {
+    return res.status(403).json({ message: "Not a workspace member" });
+  }
+
+  if (
+    message.userId !== userId &&
+    membership.role !== "OWNER" &&
+    membership.role !== "ADMIN"
+  ) {
+    return res.status(403).json({ message: "Not allowed" });
+  }
+
+  const updated = await prisma.message.update({
+    where: { id: messageId },
+    data: { content: content.trim() },
+  });
+
+  res.json(updated);
+};
+
+export const deleteMessage = async (req: Request, res: Response) => {
+    const { workspaceId, channelId, messageId } = req.params;
+    const userId = req.userId!;
+
+    if (
+    typeof workspaceId !== "string" ||
+    typeof channelId !== "string" ||
+    typeof messageId !== "string"
+  ) {
+    return res.status(400).json({ message: "Invalid params" });
+  }
+
+  const membership = await prisma.workspaceMember.findUnique({
+    where: { 
+        userId_workspaceId: {
+            userId, workspaceId
+        },
+    },
+  });
+
+  if(!membership) return res.status(404).json({ message: "Not a workspace member" });
+
+  const message = await prisma.message.findUnique({
+    where: { id: messageId, channelId,
+        channel: {
+            workspaceId
+        },
+     },
+        
+  });
+
+  if(!message) return res.status(404).json({ message: "Message not found" });
+
+   if (
+    message.userId !== userId &&
+    membership?.role !== "OWNER" &&
+    membership?.role !== "ADMIN"
+  ) {
+    return res.status(403).json({ message: "Not allowed" });
+  };
+
+   await prisma.message.delete({
+     where: {
+        id: messageId
+     },
+   });
+
+   res.json({ success: true });
+};
+
+export const leaveChannel = async (req: Request, res: Response) => {
+  const { workspaceId, channelId } = req.params;
+  const userId = req.userId!;
+
+  if (
+    typeof workspaceId !== "string" ||
+    typeof channelId !== "string"
+  ) {
+    return res.status(400).json({ message: "Invalid params" });
+  }
+
+  const workspaceMembership = await prisma.workspaceMember.findUnique({
+    where: {
+      userId_workspaceId: {
+        userId,
+        workspaceId,
+      },
+    },
+  });
+
+  if (!workspaceMembership) {
+    return res.status(403).json({ message: "Not a workspace member" });
+  }
+
+  const channel = await prisma.channel.findFirst({
+    where: {
+      id: channelId,
+      workspaceId,
+    },
+    include: {
+      members: {
+        orderBy: { joinedAt: "asc" },
+      },
+    },
+  });
+
+  if (!channel) {
+    return res.status(404).json({ message: "Channel not found" });
+  }
+
+  const isOwner = channel.ownerId === userId;
+
+  if (!isOwner) {
+    await prisma.channelMember.delete({
+      where: {
+        channelId_userId: {
+          channelId,
+          userId,
+        },
+      },
+    });
+
+    return res.json({ success: true });
+  }
+
+  const otherMembers = channel.members.filter(
+    m => m.userId !== userId
+  );
+
+  if (otherMembers.length === 0) {
+    await prisma.channel.delete({
+      where: { id: channelId },
+    });
+
+    return res.json({
+      success: true,
+      deleted: true,
+    });
+  }
+
+  const newOwner = otherMembers[0]!;
+
+  await prisma.$transaction([
+    prisma.channel.update({
+      where: { id: channelId },
+      data: {
+        ownerId: newOwner.userId,
+      },
+    }),
+    prisma.channelMember.delete({
+      where: {
+        channelId_userId: {
+          channelId,
+          userId,
+        },
+      },
+    }),
+  ]);
+
+  return res.json({
+    success: true,
+    newOwnerId: newOwner.userId,
+  });
+};
+
+
+
