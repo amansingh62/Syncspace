@@ -15,6 +15,7 @@ model User {
    createdAt  DateTime    @default(now())
 
    memberships  WorkspaceMember[]
+   messages     Message[]
 }
 
 enum WorkspaceRole {
@@ -31,6 +32,7 @@ model Workspace {
   members   WorkspaceMember[]
   invites   WorkspaceInvite[]
   docs      Doc[]
+  channels   Channel[]
 }
 
 
@@ -71,4 +73,29 @@ model Doc {
   workspace   Workspace  @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
 
   @@index([workspaceId])
+}
+
+model Channel {
+  id           String     @id   @default(uuid())
+  workspaceId  String 
+  name         String
+  createdAt    DateTime  @default(now())
+
+  workspace   Workspace  @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  messages    Message[]
+
+  @@unique([workspaceId, name])
+}
+
+model Message {
+  id          String     @id    @default(uuid())
+  channelId   String    
+  userId      String
+  content     String
+  createdAt   DateTime   @default(now())
+
+  channel     Channel    @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([channelId, createdAt])
 }
