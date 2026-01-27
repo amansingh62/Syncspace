@@ -15,7 +15,7 @@ export default function Navbar() {
 
   return (
     <main>
-      <nav className="flex items-center justify-between bg-white rounded-4xl px-8 py-5 mt-6 max-w-7xl mx-auto">
+      <nav className="flex items-center justify-between bg-white rounded-4xl px-8 py-4 mt-6 max-w-7xl mx-auto">
         <div
           className="text-xl font-medium cursor-pointer"
           onClick={() => router.push("/")}
