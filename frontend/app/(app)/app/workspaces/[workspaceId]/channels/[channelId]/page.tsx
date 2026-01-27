@@ -1,18 +1,11 @@
 "use client";
 
 import { useEffect, useState, use } from "react";
-
-interface Message {
-  id: string;
-  content: string;
-  user: {
-    id: string;
-    name: string;
-  };
-}
+import MessageItem from "./MessageItem";
+import type { ApiMessage, UiMessage } from "@/types/message";
 
 interface MessagesResponse {
-  messages: Message[];
+  messages: ApiMessage[];
   nextCursor: string | null;
 }
 
@@ -23,31 +16,43 @@ export default function ChannelPage({
 }) {
   const { workspaceId, channelId } = use(params);
 
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<UiMessage[]>([]);
   const [text, setText] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/me`, {
+      credentials: "include",
+    })
+      .then(res => (res.ok ? res.json() : null))
+      .then(user => {
+        if (user?.id) setCurrentUserId(user.id);
+      })
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/api/workspaces/${workspaceId}/channels/${channelId}/messages`,
       { credentials: "include" }
     )
-      .then(async res => {
-        if (!res.ok) {
-          const err = await res.json().catch(() => null);
-          throw new Error(err?.message || "Failed to load messages");
-        }
+      .then(res => {
+        if (!res.ok) throw new Error("Failed to load messages");
         return res.json();
       })
       .then((data: MessagesResponse) => {
-        if (Array.isArray(data.messages)) {
-          setMessages(data.messages);
-        } else {
-          setMessages([]); 
-        }
+        const safeMessages: UiMessage[] = data.messages
+          .filter((m): m is ApiMessage & { user: NonNullable<ApiMessage["user"]> } => !!m.user)
+          .map(m => ({
+            id: m.id,
+            content: m.content,
+            user: m.user,
+          }));
+
+        setMessages(safeMessages);
       })
       .catch(err => {
-        console.error(err);
         setError(err.message);
         setMessages([]);
       });
@@ -69,27 +74,52 @@ export default function ChannelPage({
 
     if (!res.ok) return;
 
-    const newMessage: Message = await res.json();
+    const newMessage: ApiMessage = await res.json();
+    if (!newMessage.user) {
+      console.error("Received message without user data");
+      return;
+    }
 
-    setMessages(prev => [...prev, newMessage]);
+    const uiMessage: UiMessage = {
+      id: newMessage.id,
+      content: newMessage.content,
+      user: newMessage.user,
+    };
+
+    setMessages(prev => [...prev, uiMessage]);
     setText("");
   }
 
   return (
     <>
       <div className="h-[70vh] overflow-y-auto border p-3 rounded">
-        {error && (
-          <p className="text-red-500 text-sm mb-2">{error}</p>
-        )}
+        {error && <p className="text-red-500 text-sm">{error}</p>}
 
-        {messages.length === 0 && !error && (
+        {!error && messages.length === 0 && (
           <p className="text-gray-400 text-sm">No messages yet</p>
         )}
 
         {messages.map(msg => (
-          <div key={msg.id}>
-            <strong>{msg.user.name}</strong>: {msg.content}
-          </div>
+          <MessageItem
+            key={msg.id}
+            message={msg}
+            workspaceId={workspaceId}
+            channelId={channelId}
+            currentUserId={currentUserId ?? ""}
+            onUpdated={updated => {
+              if (!updated.user) {
+                console.error("Updated message missing user data");
+                return;
+              }
+              
+              setMessages(prev =>
+                prev.map(m => (m.id === updated.id ? updated : m))
+              );
+            }}
+            onDeleted={id =>
+              setMessages(prev => prev.filter(m => m.id !== id))
+            }
+          />
         ))}
       </div>
 
