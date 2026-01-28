@@ -1,5 +1,6 @@
 import Navbar from "@/components/Navbar";
 import TitlePage from "@/components/TitlePage";
+import CoreFeatures from "@/components/CoreFeatures";
 import WhyChooseUs from "@/components/WhyChooseUse";
 
 export default function LandingPage(){
@@ -8,6 +9,7 @@ export default function LandingPage(){
         <Navbar />
         <TitlePage />
         <WhyChooseUs />
+        <CoreFeatures />
         </>
     )
 }
