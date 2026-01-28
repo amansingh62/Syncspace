@@ -56,7 +56,7 @@ export function TitlePage() {
           <h1 className="main-heading">
             SyncSpace brings your
             <span className="main-heading-italic italic text-gray-700">
-             <span className="text-[#E08476] gradient-word"> Team</span>, <span className="text-[#E08476] gradient-word">Tasks</span>, and 
+             <span className="text-[#E08476] gradient-word"> Team,</span> <span className="text-[#E08476] gradient-word">Tasks,</span> and 
               <span className="text-[#E08476] gradient-word tracking-tighter"> Conversations</span>
             </span>{" "}
             together.
