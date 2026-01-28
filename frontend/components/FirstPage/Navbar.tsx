@@ -8,9 +8,16 @@ export default function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
 
+  const scrollToFeatures = () => {
+    const featuresSection = document.getElementById("core-features");
+    if (featuresSection) {
+      featuresSection.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
+
   const navItems = [
-    { name: "Home", href: "/" },
-    { name: "Features", href: "/features" },
+    { name: "Home", href: "/", onClick: () => router.push("/") },
+    { name: "Features", href: "#core-features", onClick: scrollToFeatures },
   ];
 
   return (
@@ -28,7 +35,7 @@ export default function Navbar() {
             {navItems.map((item) => (
               <li key={item.name} className="relative group">
                 <motion.button
-                  onClick={() => router.push(item.href)}
+                  onClick={item.onClick}
                   className="flex items-center gap-2 text-gray-700 hover:text-black transition-colors"
                   initial="initial"
                   whileHover="hover"

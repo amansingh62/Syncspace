@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "./Button";
+import { Button } from "../Button";
 import { motion } from "framer-motion";
 
 export default function Capabilities() {
@@ -60,7 +60,10 @@ export default function Capabilities() {
             }}
             viewport={{ once: true }}
           >
-            <Button text="WHO WE LOVE TO WORK WITH" className="mt-2 text-white" />
+            <Button
+              text="WHO WE LOVE TO WORK WITH"
+              className="mt-2 text-white"
+            />
           </motion.div>
 
           {/* Features Grid */}
@@ -96,7 +99,9 @@ export default function Capabilities() {
                     {feature}
                   </span>
                   {index < 2 && (
-                    <span className="text-[#E08476] text-2xl md:text-5xl">•</span>
+                    <span className="text-[#E08476] text-2xl md:text-5xl">
+                      •
+                    </span>
                   )}
                 </motion.div>
               ))}
@@ -133,7 +138,9 @@ export default function Capabilities() {
                     {feature}
                   </span>
                   {index < 2 && (
-                    <span className="text-[#E08476] text-2xl md:text-5xl">•</span>
+                    <span className="text-[#E08476] text-2xl md:text-5xl">
+                      •
+                    </span>
                   )}
                 </motion.div>
               ))}

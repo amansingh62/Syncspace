@@ -1,9 +1,14 @@
 "use client";
 
 import React from "react";
-import { Button } from "./Button";
-import { FeatureCard } from "./FeatureCard";
-import { Briefcase, KeyRound, LockKeyhole, MessageSquareText } from "lucide-react";
+import { Button } from "../Button";
+import { FeatureCard } from "../FeatureCard";
+import {
+  Briefcase,
+  KeyRound,
+  LockKeyhole,
+  MessageSquareText,
+} from "lucide-react";
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 
@@ -62,6 +67,7 @@ export default function CoreFeatures() {
 
   return (
     <section
+      id="core-features"
       ref={containerRef}
       className="relative mt-10 max-w-7xl bg-white mx-auto rounded-2xl px-6 py-24 overflow-hidden"
     >
@@ -136,8 +142,8 @@ export default function CoreFeatures() {
             Built for focused team collaboration
           </h2>
           <p className="mt-6 text-slate-600 max-w-lg mx-auto leading-relaxed text-md font-light">
-            Everything you need to keep work organized, communication clear, and access
-            controlled—without sacrificing security.
+            Everything you need to keep work organized, communication clear, and
+            access controlled—without sacrificing security.
           </p>
         </motion.div>
 
