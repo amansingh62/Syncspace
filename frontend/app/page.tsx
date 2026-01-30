@@ -5,10 +5,12 @@ import WhyChooseUs from "@/components/FirstPage/WhyChooseUse";
 import Capabilities from "@/components/FirstPage/Capabilities";
 import FAQ from "@/components/FirstPage/FAQs";
 import Footer from "@/components/FirstPage/Footer";
+import ScrollProgress from "@/components/FirstPage/ScrollProgress";
 
 export default function LandingPage() {
   return (
     <>
+      <ScrollProgress />
       <Navbar />
       <TitlePage />
       <WhyChooseUs />

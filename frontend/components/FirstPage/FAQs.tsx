@@ -74,15 +74,24 @@ export default function FAQ() {
             damping: 20,
           }}
           viewport={{ once: true }}
-          className="text-center mb-20"
+          className="mb-12 md:mb-16 flex flex-col md:flex-row md:items-end md:justify-between gap-6"
         >
-          <h2 className="text-6xl md:text-7xl font-serif italic text-slate-900">
-            FAQs
-          </h2>
+          <div>
+            <p className="aesthetic-3 uppercase text-[#E08476] mb-3 text-center md:text-left">
+              Questions, answered
+            </p>
+            <h2 className="text-4xl md:text-5xl font-serif italic text-slate-900 text-center md:text-left">
+              FAQs about SyncSpace
+            </h2>
+          </div>
+          <p className="text-sm md:text-base text-slate-600 max-w-md text-center md:text-right mx-auto md:mx-0">
+            Everything you need to know about using SyncSpace for internal
+            collaboration, workspaces, and secure team communication.
+          </p>
         </motion.div>
 
         {/* FAQ Items */}
-        <div className="space-y-0">
+        <div className="space-y-0 rounded-2xl border border-slate-200/70 bg-white/70 backdrop-blur shadow-sm overflow-hidden">
           {faqItems.map((item, index) => (
             <motion.div
               key={item.id}
@@ -95,11 +104,11 @@ export default function FAQ() {
                 delay: index * 0.1,
               }}
               viewport={{ once: true, margin: "-50px" }}
-              className="border-b border-slate-200 last:border-b-0"
+              className="border-b border-slate-200/70 last:border-b-0"
             >
               <button
                 onClick={() => toggleFAQ(item.id)}
-                className="w-full py-6 px-6 flex items-center justify-between hover:bg-slate-50/50 transition-colors duration-300 group"
+                className="w-full py-6 px-6 flex items-center justify-between hover:bg-slate-50/70 transition-colors duration-300 group"
               >
                 <span className="text-lg md:text-xl font-medium text-slate-800 text-left group-hover:text-slate-900 transition-colors">
                   {item.question}
@@ -132,24 +141,24 @@ export default function FAQ() {
                 }
                 transition={{
                   type: "spring",
-                  stiffness: 300,
-                  damping: 40,
+                  stiffness: 260,
+                  damping: 32,
                 }}
                 className="overflow-hidden"
               >
                 <motion.div
-                  initial={{ opacity: 0, y: -10 }}
+                  initial={{ opacity: 0, y: -8 }}
                   animate={
                     expandedId === item.id
                       ? { opacity: 1, y: 0 }
-                      : { opacity: 0, y: -10 }
+                      : { opacity: 0, y: -8 }
                   }
                   transition={{
                     type: "spring",
-                    stiffness: 300,
-                    damping: 40,
+                    stiffness: 260,
+                    damping: 32,
                   }}
-                  className="px-6 pb-6 text-slate-600 leading-relaxed"
+                  className="px-6 pb-6 text-slate-600 leading-relaxed text-sm md:text-base bg-white/80"
                 >
                   {item.answer}
                 </motion.div>

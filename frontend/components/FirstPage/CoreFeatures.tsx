@@ -136,15 +136,41 @@ export default function CoreFeatures() {
             delay: 0.2,
           }}
           viewport={{ once: true }}
-          className="text-center mt-12 px-6"
+          className="mt-10 md:mt-12 px-2 md:px-6 flex flex-col md:flex-row md:items-end md:justify-between gap-6"
         >
-          <h2 className="text-4xl leading-tight">
-            Built for focused team collaboration
-          </h2>
-          <p className="mt-6 text-slate-600 max-w-lg mx-auto leading-relaxed text-md font-light">
-            Everything you need to keep work organized, communication clear, and
-            access controlled—without sacrificing security.
-          </p>
+          <div className="text-center md:text-left max-w-xl mx-auto md:mx-0">
+            <p className="aesthetic-3 uppercase text-[#E08476] mb-3">
+              Core capabilities
+            </p>
+            <h2 className="text-3xl md:text-4xl leading-tight">
+              Built for focused team collaboration
+            </h2>
+            <p className="mt-4 text-slate-600 leading-relaxed text-sm md:text-base font-light">
+              Everything you need to keep work organized, communication clear, and
+              access controlled—without sacrificing security.
+            </p>
+          </div>
+
+          <div className="hidden md:flex flex-col gap-3 text-sm text-slate-700">
+            <div className="inline-flex items-center gap-2 bg-white/80 backdrop-blur border border-slate-200 rounded-full px-4 py-2 self-start">
+              <span className="h-1.5 w-1.5 rounded-full bg-[#E08476]" />
+              Workspace-first structure
+            </div>
+            <div className="flex flex-wrap gap-3">
+              <span className="inline-flex items-center gap-2 text-xs bg-white/70 border border-slate-200 rounded-full px-3 py-1.5">
+                <Briefcase className="h-3.5 w-3.5 text-[#E08476]" />
+                Teams & projects
+              </span>
+              <span className="inline-flex items-center gap-2 text-xs bg-white/70 border border-slate-200 rounded-full px-3 py-1.5">
+                <MessageSquareText className="h-3.5 w-3.5 text-[#E08476]" />
+                Conversations
+              </span>
+              <span className="inline-flex items-center gap-2 text-xs bg-white/70 border border-slate-200 rounded-full px-3 py-1.5">
+                <KeyRound className="h-3.5 w-3.5 text-[#E08476]" />
+                Access control
+              </span>
+            </div>
+          </div>
         </motion.div>
 
         <motion.div
@@ -152,7 +178,7 @@ export default function CoreFeatures() {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-50px" }}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-20"
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-16 md:mt-20"
         >
           <motion.div variants={itemVariants}>
             <FeatureCard
@@ -205,6 +231,28 @@ export default function CoreFeatures() {
               className="h-full"
             />
           </motion.div>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          viewport={{ once: true }}
+          className="mt-10 flex flex-wrap gap-3 justify-center md:justify-start text-xs md:text-sm text-slate-600"
+        >
+          {[
+            "Designed for internal organizations",
+            "Scales with multi-workspace teams",
+            "Keeps work, access & updates in sync",
+          ].map((chip) => (
+            <span
+              key={chip}
+              className="inline-flex items-center gap-2 bg-white/85 backdrop-blur border border-slate-200 rounded-full px-4 py-2"
+            >
+              <span className="h-1.5 w-1.5 rounded-full bg-[#E08476]" />
+              {chip}
+            </span>
+          ))}
         </motion.div>
       </div>
     </section>
