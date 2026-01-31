@@ -3,6 +3,7 @@
 import { use, useEffect, useRef, useState } from "react";
 import RichTextEditor from "@/components/RichTextEditor";
 import { useDebounce } from "@/app/hooks/useDebounce";
+import { api } from "@/lib/axios";
 
 interface Doc {
   id: string;
@@ -27,48 +28,57 @@ export default function DocPage({
   const debouncedTitle = useDebounce(doc?.title, 800);
   const debouncedContent = useDebounce(doc?.content, 800);
 
-  useEffect(() => {
-    fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/workspaces/${workspaceId}/docs/${docId}`,
-      { credentials: "include" }
-    )
-      .then(res => res.json())
-      .then((data: Doc) => {
-        setDoc(data);
+ useEffect(() => {
+  let cancelled = false;
 
+  async function loadDoc() {
+    try {
+      const res = await api.get<Doc>(
+        `/workspaces/${workspaceId}/docs/${docId}`
+      );
+
+      if (!cancelled) {
+        setDoc(res.data);
         lastSaved.current = {
-          title: data.title,
-          content: data.content,
+          title: res.data.title,
+          content: res.data.content,
         };
-      });
-  }, [workspaceId, docId]);
-
-  useEffect(() => {
-    if (!doc) return;
-    if (debouncedTitle === undefined || debouncedContent === undefined) return;
-
-    if (
-      lastSaved.current.title === debouncedTitle &&
-      lastSaved.current.content === debouncedContent
-    ) {
-      return;
+      }
+    } catch {
+      // optional: show error UI
     }
+  }
 
-    let cancelled = false;
+  loadDoc();
 
-    const save = async () => {
+  return () => {
+    cancelled = true;
+  };
+}, [workspaceId, docId]);
+
+
+useEffect(() => {
+  if (!doc) return;
+  if (debouncedTitle === undefined || debouncedContent === undefined) return;
+
+  if (
+    lastSaved.current.title === debouncedTitle &&
+    lastSaved.current.content === debouncedContent
+  ) {
+    return;
+  }
+
+  let cancelled = false;
+
+  async function save() {
+    try {
       setStatus("saving");
 
-      await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/workspaces/${workspaceId}/docs/${docId}`,
+      await api.patch(
+        `/workspaces/${workspaceId}/docs/${docId}`,
         {
-          method: "PATCH",
-          credentials: "include",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            title: debouncedTitle,
-            content: debouncedContent,
-          }),
+          title: debouncedTitle,
+          content: debouncedContent,
         }
       );
 
@@ -79,14 +89,18 @@ export default function DocPage({
         };
         setStatus("saved");
       }
-    };
+    } catch {
+      // optional: show "failed to save"
+    }
+  }
 
-    save();
+  save();
 
-    return () => {
-      cancelled = true;
-    };
-  }, [debouncedTitle, debouncedContent, workspaceId, docId, doc]);
+  return () => {
+    cancelled = true;
+  };
+}, [debouncedTitle, debouncedContent, workspaceId, docId, doc]);
+
 
   if (!doc) return <p className="text-gray-500">Loading...</p>;
 

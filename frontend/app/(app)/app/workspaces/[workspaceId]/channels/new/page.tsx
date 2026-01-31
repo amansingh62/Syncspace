@@ -2,44 +2,48 @@
 
 import { useState, use } from "react";
 import { useRouter } from "next/navigation";
+import { api } from "@/lib/axios";
+import type { AxiosError } from "axios";
 
 export default function NewChannelPage({
   params,
 }: {
   params: Promise<{ workspaceId: string }>;
 }) {
-  // ✅ unwrap params
+  // unwrap params
   const { workspaceId } = use(params);
 
   const [name, setName] = useState("");
-  const [error, setError] = useState("");
+  const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
   async function createChannel(e: React.FormEvent) {
     e.preventDefault();
-    setError("");
+    setError(null);
 
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/workspaces/${workspaceId}/channels`,
-      {
-        method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name }),
-      }
-    );
-
-    if (!res.ok) {
-      const err = await res.json();
-      setError(err.message || "Failed to create channel");
+    const trimmedName = name.trim();
+    if (!trimmedName) {
+      setError("Channel name is required");
       return;
     }
 
-    const channel = await res.json();
+    try {
+      const res = await api.post<{ id: string }>(
+        `/workspaces/${workspaceId}/channels`,
+        { name: trimmedName }
+      );
 
-    router.push(
-      `/app/workspaces/${workspaceId}/channels/${channel.id}`
-    );
+      router.push(
+        `/app/workspaces/${workspaceId}/channels/${res.data.id}`
+      );
+    } catch (err: unknown) {
+      const error = err as AxiosError<{ message?: string }>;
+
+      setError(
+        error.response?.data?.message ||
+          "Failed to create channel"
+      );
+    }
   }
 
   return (

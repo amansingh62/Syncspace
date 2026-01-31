@@ -1,5 +1,7 @@
 "use client";
 
+import { api } from "@/lib/axios";
+
 interface Props {
   member: {
     id: string;            
@@ -19,44 +21,31 @@ export default function MemberActions({ member, workspaceId }: Props) {
   const canRemove = member.role !== "OWNER" && !member.isCurrentUser;
 
   async function changeRole(role: "ADMIN" | "MEMBER") {
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/workspaces/${workspaceId}/members/${member.id}/role`,
-      {
-        method: "PATCH",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ role }),
-      }
+  try {
+    await api.patch(
+      `/workspaces/${workspaceId}/members/${member.id}/role`,
+      { role }
     );
 
-    if (!res.ok) {
-      const error = await res.json();
-      alert(error.message || "Failed to change role");
-      return;
-    }
-
     window.location.reload();
+  } catch (err) {
+    alert("Failed to change role");
   }
+}
 
-  async function removeMember() {
-    if (!confirm(`Remove ${member.user.name} from workspace?`)) return;
+async function removeMember() {
+  if (!confirm(`Remove ${member.user.name} from workspace?`)) return;
 
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/workspaces/${workspaceId}/members/${member.id}`,
-      {
-        method: "DELETE",
-        credentials: "include",
-      }
+  try {
+    await api.delete(
+      `/workspaces/${workspaceId}/members/${member.id}`
     );
 
-    if (!res.ok) {
-      const error = await res.json();
-      alert(error.message || "Failed to remove member");
-      return;
-    }
-
     window.location.reload();
+  } catch (err) {
+    alert("Failed to remove member");
   }
+}
 
   return (
     <span style={{ marginLeft: 12 }}>

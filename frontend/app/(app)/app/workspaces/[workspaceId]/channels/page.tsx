@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { cookies } from "next/headers";
+import { serverFetch } from "@/lib/serverFetch";
 
 interface Channel {
   id: string;
@@ -15,26 +15,12 @@ export default async function ChannelsPage({
 }) {
   const { workspaceId } = await params;
 
-  const cookieStore = await cookies();
-
-  const cookieHeader = cookieStore
-    .getAll()
-    .map(c => `${c.name}=${c.value}`)
-    .join("; ");
-
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/workspaces/${workspaceId}/channels`,
-    {
-      cache: "no-store",
-      headers: {
-        Cookie: cookieHeader,
-      },
-    }
+  const res = await serverFetch(
+    `/workspaces/${workspaceId}/channels`
   );
 
   if (!res.ok) {
-    const text = await res.text();
-    throw new Error(`Failed to load channels: ${text}`);
+    return null;
   }
 
   const channels: Channel[] = await res.json();
@@ -50,7 +36,9 @@ export default async function ChannelsPage({
       <ul>
         {channels.map(channel => (
           <li key={channel.id}>
-            <Link href={`/app/workspaces/${workspaceId}/channels/${channel.id}`}>
+            <Link
+              href={`/app/workspaces/${workspaceId}/channels/${channel.id}`}
+            >
               # {channel.name}
             </Link>
           </li>

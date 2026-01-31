@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { api } from "@/lib/axios";
 
 export default function InviteMemberForm({
   workspaceId,
@@ -14,23 +15,14 @@ export default function InviteMemberForm({
     e.preventDefault();
     setMessage("");
 
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/workspaces/${workspaceId}/invite`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({ email }),
-      }
-    );
+    try {
+      await api.post(`/workspaces/${workspaceId}/invite`, { email });
 
-    if (!res.ok) {
+      setEmail("");
+      setMessage("Invite sent successfully");
+    } catch (err) {
       setMessage("Failed to send invite");
-      return;
     }
-
-    setEmail("");
-    setMessage("Invite sent successfully");
   };
 
   return (

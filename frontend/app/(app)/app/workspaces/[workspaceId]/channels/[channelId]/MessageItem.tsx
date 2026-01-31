@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { api } from "@/lib/axios";
+import type { AxiosError } from "axios";
 import type { UiMessage, ApiMessage } from "@/types/message";
 
 interface MessageItemProps {
@@ -28,66 +30,56 @@ export default function MessageItem({
   /* ---------- update message ---------- */
   async function handleUpdate(e: React.FormEvent) {
     e.preventDefault();
-    if (!editText.trim()) return;
+
+    const trimmed = editText.trim();
+    if (!trimmed) return;
 
     try {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/workspaces/${workspaceId}/channels/${channelId}/messages/${message.id}`,
-        {
-          method: "PATCH",
-          credentials: "include",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ content: editText }),
-        }
+      const res = await api.patch<ApiMessage>(
+        `/workspaces/${workspaceId}/channels/${channelId}/messages/${message.id}`,
+        { content: trimmed }
       );
 
-      if (!res.ok) {
-        console.error("Failed to update message");
-        return;
-      }
+      const updatedMessage = res.data;
 
-      const updatedMessage: ApiMessage = await res.json();
-      
-      // Use existing user data if API doesn't return it (fallback)
-      // Since the user doesn't change when editing a message
+      // Preserve user info if API doesn't return it
       onUpdated({
         id: updatedMessage.id,
         content: updatedMessage.content,
-        user: updatedMessage.user || message.user,
+        user: updatedMessage.user ?? message.user,
       });
-      
+
       setEditing(false);
-    } catch (error) {
-      console.error("Error updating message:", error);
+    } catch (err: unknown) {
+      const error = err as AxiosError<{ message?: string }>;
+      console.error(
+        error.response?.data?.message ?? "Failed to update message"
+      );
     }
   }
 
   /* ---------- delete message ---------- */
   async function handleDelete() {
     try {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/workspaces/${workspaceId}/channels/${channelId}/messages/${message.id}`,
-        {
-          method: "DELETE",
-          credentials: "include",
-        }
+      await api.delete(
+        `/workspaces/${workspaceId}/channels/${channelId}/messages/${message.id}`
       );
 
-      if (!res.ok) {
-        console.error("Failed to delete message");
-        return;
-      }
-
       onDeleted(message.id);
-    } catch (error) {
-      console.error("Error deleting message:", error);
+    } catch (err: unknown) {
+      const error = err as AxiosError<{ message?: string }>;
+      console.error(
+        error.response?.data?.message ?? "Failed to delete message"
+      );
     }
   }
 
   /* ---------- render ---------- */
   return (
     <div className="mb-3 p-2 border-b">
-      <div className="font-semibold text-sm">{message.user.name}</div>
+      <div className="font-semibold text-sm">
+        {message.user.name}
+      </div>
 
       {!editing ? (
         <div className="text-sm">{message.content}</div>

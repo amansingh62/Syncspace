@@ -1,3 +1,8 @@
+"use client";
+
+import { Suspense } from "react";
+import { RetryBoundary } from "@/components/RetryBoundary";
+import AppLoading from "@/components/AppLoading";
 
 export default function AppLayout({
   children,
@@ -5,9 +10,11 @@ export default function AppLayout({
   children: React.ReactNode;
 }) {
   return (
-    <>
-      <header>App</header>
-      <main>{children}</main>
-    </>
+    <RetryBoundary>
+      <Suspense fallback={<AppLoading />}>
+        <header>App</header>
+        <main>{children}</main>
+      </Suspense>
+    </RetryBoundary>
   );
 }

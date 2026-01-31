@@ -1,24 +1,11 @@
-import { cookies } from "next/headers";
-import type { WorkspaceMember, WorkspaceMemberResponse } from "../types/workspace";
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL!;
-
-async function getCookieHeader(): Promise<string> {
-  const cookieStore = await cookies();
-  return cookieStore
-    .getAll()
-    .map(c => `${c.name}=${c.value}`)
-    .join("; ");
-}
+import type {
+  WorkspaceMember,
+  WorkspaceMemberResponse,
+} from "../types/workspace";
+import { serverFetch } from "@/lib/serverFetch";
 
 export async function fetchWorkspaces(): Promise<WorkspaceMember[]> {
-  const res = await fetch(`${API_URL}/api/workspaces`, {
-    cache: "no-store",
-    headers: {
-      cookie: await getCookieHeader(),
-    },
-  });
-
+  const res = await serverFetch("/workspaces");
   if (!res.ok) return [];
   return res.json();
 }
@@ -26,16 +13,8 @@ export async function fetchWorkspaces(): Promise<WorkspaceMember[]> {
 export async function fetchWorkspaceMembers(
   workspaceId: string
 ): Promise<WorkspaceMemberResponse[]> {
-
-  const res = await fetch(
-    `${API_URL}/api/workspaces/${workspaceId}/members`,
-    {
-      method: "GET",
-      headers: {
-        cookie: await getCookieHeader(),
-      },
-      cache: "no-store",
-    }
+  const res = await serverFetch(
+    `/workspaces/${workspaceId}/members`
   );
 
   if (!res.ok) {
@@ -47,10 +26,10 @@ export async function fetchWorkspaceMembers(
 
   const data = await res.json();
 
-    if (data && typeof data === 'object' && 'members' in data) {
+  if (data && typeof data === "object" && "members" in data) {
     return data.members;
   }
-  
+
   if (Array.isArray(data)) {
     return data;
   }

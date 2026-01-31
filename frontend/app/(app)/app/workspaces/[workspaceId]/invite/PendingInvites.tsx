@@ -2,66 +2,72 @@
 
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
+import { api } from "@/lib/axios";
 
 interface Invite {
-    id: string,
-    token: string,
-    workspace: {
-        id: string,
-        name: string
-    }
-};
+  id: string;
+  token: string;
+  workspace: {
+    id: string;
+    name: string;
+  };
+}
 
 export default function PendingInvites() {
-    const [ invites, setInvites ] = useState<Invite[]>([]);
-    const router = useRouter();
+  const [invites, setInvites] = useState<Invite[]>([]);
+  const router = useRouter();
 
-const loadInvites = useCallback(async () => {
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/workspaces/invite`,
-    { credentials: "include" }
-  );
+  const loadInvites = useCallback(async () => {
+    try {
+      const res = await api.get<Invite[]>("/workspaces/invite");
+      setInvites(res.data);
+    } catch {
+      // silently fail or show toast if you want
+    }
+  }, []);
 
-  if (!res.ok) return;
+  async function accept(token: string) {
+    try {
+      await api.post(`/workspaces/invite/${token}/accept`);
+      setInvites(prev => prev.filter(i => i.token !== token));
+      router.refresh();
+    } catch {
+      alert("Failed to accept invite");
+    }
+  }
 
-  const data = await res.json();
-  setInvites(data);
+  async function reject(token: string) {
+    if (!confirm("Reject this workspace invitation?")) return;
+
+    try {
+      await api.delete(`/workspaces/invite/${token}`);
+      loadInvites();
+    } catch {
+      alert("Failed to reject invite");
+    }
+  }
+
+useEffect(() => {
+  let cancelled = false;
+
+  async function load() {
+    try {
+      const res = await api.get<Invite[]>("/workspaces/invite");
+      if (!cancelled) {
+        setInvites(res.data);
+      }
+    } catch {}
+  }
+
+  load();
+
+  return () => {
+    cancelled = true;
+  };
 }, []);
 
 
-   async function accept(token: string) {
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/workspaces/invite/${token}/accept`,
-    {
-      method: "POST",
-      credentials: "include",
-    }
-  );
-
-  if (res.ok) {
-    setInvites(prev => prev.filter(i => i.token !== token));
-    router.refresh();
-  }
-}
-
-
-useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    loadInvites();
-}, [loadInvites]);
-
-  async function reject(token: string) {
-    if(!confirm("Reject this workspace invitation")) return;
-
-    await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/workspaces/invite/${token}`, {
-        method: "DELETE",
-        credentials: "include"
-    });
-
-    loadInvites();
-  };
-
-     if (invites.length === 0) return null;
+  if (invites.length === 0) return null;
 
   return (
     <div>
@@ -72,7 +78,7 @@ useEffect(() => {
           <li key={invite.id}>
             Invited to <strong>{invite.workspace.name}</strong>
             <button onClick={() => accept(invite.token)}>Accept</button>
-             <button onClick={() => reject(invite.token)}>Reject</button>
+            <button onClick={() => reject(invite.token)}>Reject</button>
           </li>
         ))}
       </ul>

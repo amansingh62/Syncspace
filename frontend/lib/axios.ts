@@ -9,32 +9,49 @@ interface RetryAxiosRequestConfig extends InternalAxiosRequestConfig {
 }
 
 export const api = axios.create({
-  baseURL: "/api",        
-  withCredentials: true,  
+  baseURL: process.env.NEXT_PUBLIC_API_URL,
+  withCredentials: true,
 });
 
-api.interceptors.response.use((response: AxiosResponse) => { return response }, async (error: AxiosError) => {
+api.interceptors.response.use(
+  (response: AxiosResponse) => response,
+  async (error: AxiosError) => {
     const originalRequest = error.config as RetryAxiosRequestConfig | undefined;
 
-    if(error.response?.status !== 401 || !originalRequest || originalRequest._retry){
-        return Promise.reject(error);
+    // Never intercept refresh itself
+    if (originalRequest?.url?.includes("/auth/refresh")) {
+      throw error;
+    }
+
+    if (
+      error.response?.status !== 401 ||
+      !originalRequest ||
+      originalRequest._retry
+    ) {
+      throw error;
     }
 
     originalRequest._retry = true;
 
-    try {
-        const refresh = await fetch("/api/auth/refresh", {
-            method: "POST",
-            credentials: "include"
-        });
+    const refresh = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/auth/refresh`,
+      {
+        method: "POST",
+        credentials: "include",
+      }
+    );
 
-        if(!refresh.ok){
-            throw new Error("Refresh Failed");
-        }
-
-        return api(originalRequest);
-    } catch (err) {
-        window.location.href = "/login";
-        return Promise.reject(err);
+    if (!refresh.ok) {
+      // Let middleware handle redirect
+      throw error;
     }
-} );
+
+    // Retry request with fresh cookies
+    return api.request({
+      ...originalRequest,
+      headers: {
+        ...originalRequest.headers,
+      },
+    });
+  }
+);

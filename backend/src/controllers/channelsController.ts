@@ -60,6 +60,59 @@ export const listChannels = async (req: Request, res: Response) => {
     res.json(channels);
 };
 
+export const getChannel = async (req: Request, res: Response) => {
+  const { workspaceId, channelId } = req.params;
+  const userId = req.userId!;
+
+  if (typeof workspaceId !== "string" || typeof channelId !== "string") {
+    return res.status(400).json({ message: "Invalid params" });
+  }
+
+  const membership = await prisma.workspaceMember.findUnique({
+    where: {
+      userId_workspaceId: {
+        userId,
+        workspaceId,
+      },
+    },
+  });
+
+  if (!membership) {
+    return res.status(403).json({ message: "Not a workspace member" });
+  }
+
+  const channel = await prisma.channel.findFirst({
+    where: {
+      id: channelId,
+      workspaceId,
+    },
+  });
+
+  if (!channel) {
+    return res.status(404).json({ message: "Channel not found" });
+  }
+
+  const channelMembership = await prisma.channelMember.findUnique({
+    where: {
+      channelId_userId: {
+        channelId,
+        userId,
+      },
+    },
+  });
+
+  if (!channelMembership) {
+    return res.status(403).json({ message: "Not a channel member" });
+  }
+
+  res.json({
+    id: channel.id,
+    name: channel.name,
+    workspaceId: channel.workspaceId,
+    createdAt: channel.createdAt,
+  });
+};
+
 export const sendMessages = async (req: Request, res: Response) => {
     const { workspaceId, channelId } = req.params;
     const { content } = req.body;
@@ -213,10 +266,18 @@ export const editMessage = async (req: Request, res: Response) => {
     return res.status(403).json({ message: "Not allowed" });
   }
 
-  const updated = await prisma.message.update({
-    where: { id: messageId },
-    data: { content: content.trim() },
-  });
+const updated = await prisma.message.update({
+  where: { id: messageId },
+  data: { content },
+  include: {
+    user: {
+      select: {
+        id: true,
+        name: true,
+      },
+    },
+  },
+});
 
   res.json(updated);
 };
@@ -365,6 +426,3 @@ export const leaveChannel = async (req: Request, res: Response) => {
     newOwnerId: newOwner.userId,
   });
 };
-
-
-

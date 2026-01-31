@@ -1,8 +1,10 @@
 "use client";
 
 import { useEffect, useState, use } from "react";
+import { api } from "@/lib/axios";
 import MessageItem from "./MessageItem";
 import type { ApiMessage, UiMessage } from "@/types/message";
+import type { AxiosError } from "axios";
 
 interface MessagesResponse {
   messages: ApiMessage[];
@@ -21,82 +23,122 @@ export default function ChannelPage({
   const [error, setError] = useState<string | null>(null);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
 
+  /* ---------- load current user ---------- */
   useEffect(() => {
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/me`, {
-      credentials: "include",
-    })
-      .then(res => (res.ok ? res.json() : null))
-      .then(user => {
-        if (user?.id) setCurrentUserId(user.id);
-      })
-      .catch(() => {});
+    let cancelled = false;
+
+    async function loadMe() {
+      try {
+        const res = await api.get<{ id: string }>("/auth/me");
+        if (!cancelled) {
+          setCurrentUserId(res.data.id);
+        }
+      } catch {
+        // silently ignore
+      }
+    }
+
+    loadMe();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
+  /* ---------- load messages ---------- */
   useEffect(() => {
-    fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/workspaces/${workspaceId}/channels/${channelId}/messages`,
-      { credentials: "include" }
-    )
-      .then(res => {
-        if (!res.ok) throw new Error("Failed to load messages");
-        return res.json();
-      })
-      .then((data: MessagesResponse) => {
-        const safeMessages: UiMessage[] = data.messages
-          .filter((m): m is ApiMessage & { user: NonNullable<ApiMessage["user"]> } => !!m.user)
+    let cancelled = false;
+
+    async function loadMessages() {
+      try {
+        const res = await api.get<MessagesResponse>(
+          `/workspaces/${workspaceId}/channels/${channelId}/messages`
+        );
+
+        const safeMessages: UiMessage[] = res.data.messages
+          .filter(
+            (
+              m
+            ): m is ApiMessage & {
+              user: NonNullable<ApiMessage["user"]>;
+            } => !!m.user
+          )
           .map(m => ({
             id: m.id,
             content: m.content,
             user: m.user,
           }));
 
-        setMessages(safeMessages);
-      })
-      .catch(err => {
-        setError(err.message);
-        setMessages([]);
-      });
-  }, [workspaceId, channelId]);
-
-  async function sendMessage(e: React.FormEvent) {
-    e.preventDefault();
-    if (!text.trim()) return;
-
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/workspaces/${workspaceId}/channels/${channelId}/messages`,
-      {
-        method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ content: text }),
+        if (!cancelled) {
+          setMessages(safeMessages);
+          setError(null);
+        }
+      } catch (err: unknown) {
+        const error = err as AxiosError<{ message?: string }>;
+        if (!cancelled) {
+          setError(
+            error.response?.data?.message ||
+              "Failed to load messages"
+          );
+          setMessages([]);
+        }
       }
-    );
-
-    if (!res.ok) return;
-
-    const newMessage: ApiMessage = await res.json();
-    if (!newMessage.user) {
-      console.error("Received message without user data");
-      return;
     }
 
-    const uiMessage: UiMessage = {
-      id: newMessage.id,
-      content: newMessage.content,
-      user: newMessage.user,
-    };
+    loadMessages();
 
-    setMessages(prev => [...prev, uiMessage]);
-    setText("");
+    return () => {
+      cancelled = true;
+    };
+  }, [workspaceId, channelId]);
+
+  /* ---------- send message ---------- */
+  async function sendMessage(e: React.FormEvent) {
+    e.preventDefault();
+
+    const trimmed = text.trim();
+    if (!trimmed) return;
+
+    try {
+      const res = await api.post<ApiMessage>(
+        `/workspaces/${workspaceId}/channels/${channelId}/messages`,
+        { content: trimmed }
+      );
+
+      if (!res.data.user) {
+        console.error("Received message without user data");
+        return;
+      }
+
+      const uiMessage: UiMessage = {
+        id: res.data.id,
+        content: res.data.content,
+        user: res.data.user,
+      };
+
+      setMessages(prev => [...prev, uiMessage]);
+      setText("");
+    } catch (err: unknown) {
+      const error = err as AxiosError<{ message?: string }>;
+      setError(
+        error.response?.data?.message ||
+          "Failed to send message"
+      );
+    }
   }
 
+  /* ---------- render ---------- */
   return (
     <>
       <div className="h-[70vh] overflow-y-auto border p-3 rounded">
-        {error && <p className="text-red-500 text-sm">{error}</p>}
+        {error && (
+          <p className="text-red-500 text-sm">{error}</p>
+        )}
 
         {!error && messages.length === 0 && (
-          <p className="text-gray-400 text-sm">No messages yet</p>
+          <p className="text-gray-400 text-sm">
+            No messages yet
+          </p>
         )}
 
         {messages.map(msg => (
@@ -108,16 +150,22 @@ export default function ChannelPage({
             currentUserId={currentUserId ?? ""}
             onUpdated={updated => {
               if (!updated.user) {
-                console.error("Updated message missing user data");
+                console.error(
+                  "Updated message missing user data"
+                );
                 return;
               }
-              
+
               setMessages(prev =>
-                prev.map(m => (m.id === updated.id ? updated : m))
+                prev.map(m =>
+                  m.id === updated.id ? updated : m
+                )
               );
             }}
             onDeleted={id =>
-              setMessages(prev => prev.filter(m => m.id !== id))
+              setMessages(prev =>
+                prev.filter(m => m.id !== id)
+              )
             }
           />
         ))}

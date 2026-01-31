@@ -2,15 +2,16 @@
 
 import { useRouter, useParams } from "next/navigation";
 import { useState } from "react";
+import { api } from "@/lib/axios";
+import type { AxiosError } from "axios";
 
 export default function NewDocPage() {
   const { workspaceId } = useParams<{ workspaceId: string }>();
+  const router = useRouter();
 
   const [title, setTitle] = useState("");
   const [isCreating, setIsCreating] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  const router = useRouter();
 
   async function create() {
     if (!workspaceId) {
@@ -18,7 +19,8 @@ export default function NewDocPage() {
       return;
     }
 
-    if (!title.trim() || title.trim().length < 2) {
+    const trimmedTitle = title.trim();
+    if (trimmedTitle.length < 2) {
       setError("Title must be at least 2 characters");
       return;
     }
@@ -27,40 +29,33 @@ export default function NewDocPage() {
     setError(null);
 
     try {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/workspaces/${workspaceId}/docs`,
-        {
-          method: "POST",
-          credentials: "include",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ title: title.trim() }),
-        }
+      const res = await api.post<{ id: string }>(
+        `/workspaces/${workspaceId}/docs`,
+        { title: trimmedTitle }
       );
 
-      if (!res.ok) {
-        const errorData = await res
-          .json()
-          .catch(() => ({ message: "Failed to create document" }));
-        setError(errorData.message || `Error: ${res.status}`);
-        return;
-      }
+      router.push(
+        `/app/workspaces/${workspaceId}/docs/${res.data.id}`
+      );
+    } catch (err: unknown) {
+      const axiosError = err as AxiosError<{ message?: string }>;
 
-      const doc = await res.json();
-
-      router.push(`/app/workspaces/${workspaceId}/docs/${doc.id}`);
-    } catch (err) {
-      console.error("Error creating document:", err);
-      setError("Failed to create document. Please try again.");
+      setError(
+        axiosError.response?.data?.message ??
+          "Failed to create document. Please try again."
+      );
     } finally {
       setIsCreating(false);
     }
   }
 
   return (
-    <>
-      <h1>New Doc</h1>
+    <div className="max-w-lg mx-auto space-y-4">
+      <h1 className="text-xl font-semibold">New Document</h1>
 
-      {error && <p style={{ color: "red" }}>{error}</p>}
+      {error && (
+        <p className="text-red-500 text-sm">{error}</p>
+      )}
 
       <input
         type="text"
@@ -68,11 +63,16 @@ export default function NewDocPage() {
         onChange={e => setTitle(e.target.value)}
         placeholder="Enter document title"
         disabled={isCreating}
+        className="w-full border px-3 py-2 rounded"
       />
 
-      <button onClick={create} disabled={isCreating || !title.trim()}>
+      <button
+        onClick={create}
+        disabled={isCreating || !title.trim()}
+        className="px-4 py-2 bg-blue-600 text-white rounded disabled:opacity-50"
+      >
         {isCreating ? "Creating..." : "Create"}
       </button>
-    </>
+    </div>
   );
 }
