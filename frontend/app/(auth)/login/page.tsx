@@ -52,7 +52,7 @@ export default function LoginPage() {
     >
       {/* Header */}
       <div className="mb-8">
-        <h2 className="text-3xl sm:text-4xl font-bold text-balance" style={{ color: "#1f2937" }}>
+        <h2 className="text-3xl sm:text-4xl font-bold text-balance text-[#1f2937]">
            Log In
         </h2>
         <p className="auth-text mt-2 text-sm sm:text-base">

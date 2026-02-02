@@ -12,7 +12,6 @@ export default function AppLayout({
   return (
     <RetryBoundary>
       <Suspense fallback={<AppLoading />}>
-        <header>App</header>
         <main>{children}</main>
       </Suspense>
     </RetryBoundary>

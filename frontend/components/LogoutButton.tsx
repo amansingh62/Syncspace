@@ -14,5 +14,5 @@ export function LogoutButton() {
         }
     };
 
-    return <button onClick={logout} className="text-xl m-1 p-2 bg-amber-300 rounded-xl">Logout</button>
+    return <button onClick={logout} className="text-xl">Logout</button>
 }

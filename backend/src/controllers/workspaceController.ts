@@ -9,7 +9,7 @@ export const createWorkspace = async (req: Request, res: Response) => {
         if(!req.userId) return res.status(401).json({ message: "Unathorized" });
 
         if(!name || name.trim().length < 2){
-            res.status(400).json({ message: "Workspace name must be at least 2 characters" });
+           return res.status(400).json({ message: "Workspace name must be at least 2 characters" });
         }
 
         const workspace = await prisma.workspace.create({
@@ -49,7 +49,6 @@ export const listWorkspaces = async (req: Request, res: Response) => {
     });
 
       res.json(members);
-
 };
 
 export const inviteMember = async (req: Request, res: Response) => {

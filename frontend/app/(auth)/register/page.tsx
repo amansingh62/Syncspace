@@ -29,7 +29,7 @@ export default function SignupPage() {
     }
 
     if (password.length < 6) {
-      setError("Password must be at least 6 characters");
+      setError("Password must be at least 6 characters and include letters like capital, smallcase, symbol and number");
       return;
     }
 
@@ -149,7 +149,7 @@ export default function SignupPage() {
             </button>
           </div>
           <p className="text-xs auth-text">
-            Password must be at least 6 characters
+            Password must be at least 6 charactersand include letters like upper, smallcase, symbol and number
           </p>
         </div>
 
