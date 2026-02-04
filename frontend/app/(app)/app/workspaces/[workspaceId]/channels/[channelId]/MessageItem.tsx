@@ -67,7 +67,7 @@ export default function MessageItem({
   /* ---------- render ---------- */
   return (
     <div
-      className={`group relative px-4 py-3 hover:bg-white/[0.02] transition-colors ${
+  className={`group relative px-3 py-3 md:px-4 hover:bg-white/2 transition-colors ${
         message.pending ? "opacity-50" : ""
       }`}
       onMouseEnter={() => setShowActions(true)}
@@ -76,7 +76,7 @@ export default function MessageItem({
       <div className="flex gap-3">
         {/* User Avatar */}
         <div className="shrink-0">
-          <div className="w-9 h-9 border border-white/10 flex items-center justify-center text-white/70 text-sm font-light">
+<div className="w-8 h-8 md:w-9 md:h-9 border border-white/10 flex items-center justify-center text-white/70 text-sm font-light">
             {message.user.name.charAt(0).toUpperCase()}
           </div>
         </div>
@@ -95,15 +95,15 @@ export default function MessageItem({
 
           {/* Message Text or Edit Form */}
           {!editing ? (
-            <div className="text-sm text-white/80 font-light leading-relaxed break-words">
+            <div className="text-sm text-white/80 font-light leading-relaxed wrap-break-word">
               {message.content}
             </div>
           ) : (
-            <form onSubmit={handleUpdate} className="space-y-2 mt-2">
+<form onSubmit={handleUpdate} className="space-y-3 mt-3 md:space-y-2 md:mt-2">
               <input
                 value={editText}
                 onChange={e => setEditText(e.target.value)}
-                className="w-full bg-white/[0.02] border border-white/10 text-white text-sm font-light px-3 py-2 focus:outline-none focus:border-[#E08476]/50 transition-colors"
+                className="w-full bg-white/2 border border-white/10 text-white text-sm font-light px-3 py-2 focus:outline-none focus:border-[#E08476]/50 transition-colors"
                 autoFocus
               />
               <div className="flex gap-2">
@@ -132,14 +132,17 @@ export default function MessageItem({
 
         {/* Action Buttons (shown on hover for owner) */}
         {isOwner && !editing && (
-          <div
-            className={`shrink-0 flex items-start gap-1 transition-opacity ${
-              showActions ? "opacity-100" : "opacity-0"
-            }`}
-          >
+         <div
+  className={`
+    shrink-0 flex items-start gap-1
+    opacity-100 md:transition-opacity
+    md:${showActions ? "opacity-100" : "opacity-0"}
+  `}
+>
+
             <button
               onClick={() => setEditing(true)}
-              className="p-1.5 hover:bg-white/5 border border-transparent hover:border-white/10 transition-colors group/btn"
+className="p-2 md:p-1.5 hover:bg-white/5 border border-transparent hover:border-white/10 transition-colors group/btn"
               title="Edit message"
             >
               <Pencil className="w-3.5 h-3.5 text-white/40 group-hover/btn:text-[#E08476]" />

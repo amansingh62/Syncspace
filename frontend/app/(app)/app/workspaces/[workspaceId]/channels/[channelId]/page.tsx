@@ -52,13 +52,11 @@ export default function ChannelPage({
     workspaceId,
     channelId,
 
-    onMessageNew: msg => {
-      setMessages(prev => {
+    onMessageNew: (msg) => {
+      setMessages((prev) => {
         const index = prev.findIndex(
-          m =>
-            m.pending &&
-            m.content === msg.content &&
-            m.user.id === msg.user.id
+          (m) =>
+            m.pending && m.content === msg.content && m.user.id === msg.user.id,
         );
 
         if (index !== -1) {
@@ -67,20 +65,16 @@ export default function ChannelPage({
           return copy;
         }
 
-        return prev.some(m => m.id === msg.id)
-          ? prev
-          : [...prev, msg];
+        return prev.some((m) => m.id === msg.id) ? prev : [...prev, msg];
       });
     },
 
-    onMessageUpdated: msg => {
-      setMessages(prev =>
-        prev.map(m => (m.id === msg.id ? msg : m))
-      );
+    onMessageUpdated: (msg) => {
+      setMessages((prev) => prev.map((m) => (m.id === msg.id ? msg : m)));
     },
 
-    onMessageDeleted: id => {
-      setMessages(prev => prev.filter(m => m.id !== id));
+    onMessageDeleted: (id) => {
+      setMessages((prev) => prev.filter((m) => m.id !== id));
     },
   });
 
@@ -110,18 +104,18 @@ export default function ChannelPage({
     async function loadMessages() {
       try {
         const res = await api.get<MessagesResponse>(
-          `/workspaces/${workspaceId}/channels/${channelId}/messages`
+          `/workspaces/${workspaceId}/channels/${channelId}/messages`,
         );
 
         const safeMessages: UiMessage[] = res.data.messages
           .filter(
             (
-              m
+              m,
             ): m is ApiMessage & {
               user: NonNullable<ApiMessage["user"]>;
-            } => !!m.user
+            } => !!m.user,
           )
-          .map(m => ({
+          .map((m) => ({
             id: m.id,
             content: m.content,
             user: m.user,
@@ -134,10 +128,7 @@ export default function ChannelPage({
       } catch (err) {
         const error = err as AxiosError<{ message?: string }>;
         if (!cancelled) {
-          setError(
-            error.response?.data?.message ||
-              "Failed to load messages"
-          );
+          setError(error.response?.data?.message || "Failed to load messages");
           setMessages([]);
         }
       }
@@ -164,7 +155,7 @@ export default function ChannelPage({
 
     const tempId = `temp-${Date.now()}`;
 
-    setMessages(prev => [
+    setMessages((prev) => [
       ...prev,
       {
         id: tempId,
@@ -179,21 +170,20 @@ export default function ChannelPage({
 
     setText("");
 
-    api.post(
-      `/workspaces/${workspaceId}/channels/${channelId}/messages`,
-      { content: trimmed }
-    ).catch(() => {
-      setMessages(prev =>
-        prev.filter(m => m.id !== tempId)
-      );
-    });
+    api
+      .post(`/workspaces/${workspaceId}/channels/${channelId}/messages`, {
+        content: trimmed,
+      })
+      .catch(() => {
+        setMessages((prev) => prev.filter((m) => m.id !== tempId));
+      });
   }
 
   /* -------------------- render -------------------- */
   return (
     <div className="flex flex-col h-full bg-[#0A0A0A]">
       {/* Messages Container */}
-      <div className="flex-1 overflow-y-auto px-6 py-6">
+      <div className="flex-1 overflow-y-auto px-3 py-4 md:px-6 md:py-6 no-scrollbar">
         {/* Error State */}
         {error && (
           <div className="mb-6 border-l-2 border-red-500/50 bg-red-500/5 px-4 py-3">
@@ -221,44 +211,49 @@ export default function ChannelPage({
 
         {/* Messages List */}
         <div className="space-y-1">
-          {messages.map(msg => (
+          {messages.map((msg) => (
             <MessageItem
               key={msg.id}
               message={msg}
               workspaceId={workspaceId}
               channelId={channelId}
               currentUserId={currentUserId ?? ""}
-              onUpdated={updated => {
-                setMessages(prev =>
-                  prev.map(m =>
-                    m.id === updated.id ? updated : m
-                  )
+              onUpdated={(updated) => {
+                setMessages((prev) =>
+                  prev.map((m) => (m.id === updated.id ? updated : m)),
                 );
               }}
-              onDeleted={id => {
-                setMessages(prev =>
-                  prev.filter(m => m.id !== id)
-                );
+              onDeleted={(id) => {
+                setMessages((prev) => prev.filter((m) => m.id !== id));
               }}
             />
           ))}
         </div>
-        
+
         <div ref={messagesEndRef} />
       </div>
 
       {/* Typing Indicator */}
       {typingUsers.length > 0 && (
-        <div className="px-6 py-3 border-t border-white/5 bg-[#0A0A0A]">
+        <div className="border-t border-white/5 bg-[#0A0A0A] sticky bottom-0 pb-safe">
           <div className="flex items-center gap-2">
             <div className="flex gap-1">
-              <span className="w-1.5 h-1.5 bg-[#E08476] rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-              <span className="w-1.5 h-1.5 bg-[#E08476] rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-              <span className="w-1.5 h-1.5 bg-[#E08476] rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+              <span
+                className="w-1.5 h-1.5 bg-[#E08476] rounded-full animate-bounce"
+                style={{ animationDelay: "0ms" }}
+              />
+              <span
+                className="w-1.5 h-1.5 bg-[#E08476] rounded-full animate-bounce"
+                style={{ animationDelay: "150ms" }}
+              />
+              <span
+                className="w-1.5 h-1.5 bg-[#E08476] rounded-full animate-bounce"
+                style={{ animationDelay: "300ms" }}
+              />
             </div>
             <p className="text-xs text-white/50 font-light">
               {typingUsers
-                .map(u => u.name)
+                .map((u) => u.name)
                 .slice(0, 2)
                 .join(", ")}
               {typingUsers.length > 2 && " and others"} typing…
@@ -268,27 +263,29 @@ export default function ChannelPage({
       )}
 
       {/* Message Input */}
-      <div className="border-t border-white/5 bg-[#0A0A0A]">
-        <form onSubmit={sendMessage} className="p-6">
-          <div className="flex gap-3">
+      <div className="border-t border-white/5 bg-[#0A0A0A] sticky bottom-0">
+        <form onSubmit={sendMessage} className="p-3 md:p-6">
+          <div className="flex items-end gap-2 md:gap-3">
             <input
               value={text}
-              onChange={e => {
+              onChange={(e) => {
                 setText(e.target.value);
                 handleTyping();
               }}
               placeholder="Type a message..."
-              className="flex-1 bg-white/[0.02] border border-white/10 text-white text-base font-light px-4 py-3 focus:outline-none focus:border-[#E08476]/50 transition-colors placeholder:text-white/30"
+              className="flex-1 bg-white/2 border border-white/10 text-white text-sm md:text-base font-light px-3 md:px-4 py-2.5 md:py-3 focus:outline-none focus:border-[#E08476]/50 transition-colors placeholder:text-white/30"
               autoComplete="off"
             />
-            
+
             <button
               type="submit"
               disabled={!text.trim()}
-              className="group bg-[#E08476] hover:bg-[#D67567] text-white px-6 transition-all duration-300 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-[#E08476] flex items-center justify-center gap-2 min-w-[100px]"
+              className="group bg-[#E08476] hover:bg-[#D67567] text-white px-3 md:px-6 transition-all duration-300 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-[#E08476] flex items-center justify-center gap-2 min-w-11"
             >
-              <span className="font-normal tracking-wide">Send</span>
-              <Send className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
+              <span className="hidden md:inline font-normal tracking-wide">
+                Send
+              </span>
+              <Send className="w-4 h-10 md:h-12 transition-transform group-hover:translate-x-0.5" />
             </button>
           </div>
         </form>

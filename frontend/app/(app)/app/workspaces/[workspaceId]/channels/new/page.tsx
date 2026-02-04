@@ -52,12 +52,12 @@ export default function NewChannelPage({
   }
 
   return (
-    <div className="h-full bg-[#0A0A0A] overflow-y-auto">
-      <div className="max-w-3xl mx-auto px-6 py-12">
+    <div className="h-full bg-[#0A0A0A] overflow-y-auto no-scrollbar md:scrollbar-default">
+      <div className="max-w-3xl mx-auto px-4 py-8 md:px-6 md:py-12">
         {/* Back Button */}
         <Link
           href={`/app/workspaces/${workspaceId}/channels`}
-          className="inline-flex items-center gap-2 text-white/50 hover:text-white transition-colors group mb-8"
+          className="inline-flex items-center gap-2 text-white/50 hover:text-white transition-colors group mb-6 md:mb-8"
         >
           <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
           <span className="text-sm font-light tracking-wide">Back to Channels</span>
@@ -65,25 +65,25 @@ export default function NewChannelPage({
 
         {/* Header */}
         <div className="mb-12">
-          <div className="flex items-center gap-3 mb-6">
+          <div className="flex items-center gap-3 mb-4 md:mb-6">
             <div className="h-px w-12 bg-gradient-to-r from-transparent to-[#E08476]" />
             <span className="text-[#E08476]/80 text-sm font-light tracking-[0.2em] uppercase">
               New Channel
             </span>
           </div>
 
-          <h1 className="text-4xl md:text-5xl font-light tracking-tight text-white mb-4">
+          <h1 className="text-3xl md:text-5xl font-light tracking-tight text-white mb-3 md:mb-4">
             Create a channel
           </h1>
 
-          <p className="text-lg text-white/50 font-light max-w-xl">
+          <p className="text-base md:text-lg text-white/50 font-light max-w-xl">
             Channels are where your team communicates. They are best organized around a topic — like #marketing or #general.
           </p>
         </div>
 
         {/* Form Container */}
         <div className="border border-white/5 bg-white/[0.02]">
-          <form onSubmit={createChannel} className="p-8 md:p-12">
+          <form onSubmit={createChannel} className="p-6 md:p-12">
             <div className="space-y-8">
               {/* Channel Name Input */}
               <div className="space-y-3">
@@ -105,7 +105,7 @@ export default function NewChannelPage({
                     value={name}
                     onChange={e => setName(e.target.value)}
                     disabled={loading}
-                    className="w-full bg-transparent border border-white/10 text-white text-lg font-light pl-12 pr-6 py-4 focus:outline-none focus:border-[#E08476]/50 transition-colors placeholder:text-white/30 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full bg-transparent border border-white/10 text-white text-base md:text-lg font-light pl-11 md:pl-12 pr-4 md:pr-6 py-3 md:py-4 focus:outline-none focus:border-[#E08476]/50 transition-colors placeholder:text-white/30 disabled:opacity-50 disabled:cursor-not-allowed"
                   />
                 </div>
 
@@ -132,7 +132,7 @@ export default function NewChannelPage({
                 <button
                   type="submit"
                   disabled={loading || !name.trim()}
-                  className="group relative bg-[#E08476] hover:bg-[#D67567] text-white font-normal tracking-wide px-8 h-14 transition-all duration-300 border-0 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#E08476] flex items-center justify-center gap-2"
+                  className="group relative bg-[#E08476] hover:bg-[#D67567] text-white font-normal tracking-wide px-6 md:px-8 h-12 md:h-14 transition-all duration-300 border-0 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#E08476] flex items-center justify-center gap-2"
                 >
                   {loading ? (
                     <>
@@ -149,7 +149,7 @@ export default function NewChannelPage({
 
                 <Link
                   href={`/app/workspaces/${workspaceId}/channels`}
-                  className="inline-flex items-center justify-center gap-2 border border-white/10 hover:border-white/20 text-white/70 hover:text-white font-normal tracking-wide px-8 h-14 transition-all duration-300 bg-transparent hover:bg-white/5"
+                  className="inline-flex items-center justify-center gap-2 border border-white/10 hover:border-white/20 text-white/70 hover:text-white font-normal tracking-wide px-6 md:px-8 h-12 md:h-14 transition-all duration-300 bg-transparent hover:bg-white/5"
                 >
                   Cancel
                 </Link>
@@ -159,7 +159,7 @@ export default function NewChannelPage({
         </div>
 
         {/* Additional Info */}
-        <div className="mt-8 border-t border-white/5 pt-8">
+        <div className="mt-6 md:mt-8 border-t border-white/5 pt-6 md:pt-8">
           <div className="space-y-4 text-sm">
             <div>
               <div className="text-white/40 uppercase tracking-wider text-xs mb-2">Channel Guidelines</div>

@@ -31,7 +31,7 @@ export default async function WorkspaceLayout({
   return (
     <div className="flex h-screen bg-[#0A0A0A] overflow-hidden">
       {/* Sidebar Navigation */}
-      <nav className="w-64 border-r border-white/5 bg-[#0A0A0A] flex flex-col">
+<nav className="hidden md:flex w-64 shrink-0 border-r border-white/5 bg-[#0A0A0A] flex-col">
         {/* Workspace Header */}
         <div className="px-6 py-8 border-b border-white/5">
           <div className="flex items-center gap-3">
@@ -76,8 +76,29 @@ export default async function WorkspaceLayout({
         </div>
       </nav>
 
+{/* Mobile Bottom Navigation */}
+<nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-white/5 bg-[#0A0A0A] md:hidden">
+  <div className="flex justify-around py-3">
+    {navItems.map((item) => {
+      const Icon = item.icon;
+      return (
+        <Link
+          key={item.href}
+          href={item.href}
+          className="flex flex-col items-center gap-1 text-white/50 hover:text-white transition-colors"
+        >
+          <Icon className="w-5 h-5" />
+          <span className="text-[10px] font-light tracking-wide">
+            {item.label}
+          </span>
+        </Link>
+      );
+    })}
+  </div>
+</nav>
+
       {/* Main Content Area */}
-      <main className="flex-1 overflow-hidden bg-[#0A0A0A]">
+<main className="flex-1 overflow-auto bg-[#0A0A0A] pb-16 md:pb-0 no-scrollbar">
         {children}
       </main>
     </div>
