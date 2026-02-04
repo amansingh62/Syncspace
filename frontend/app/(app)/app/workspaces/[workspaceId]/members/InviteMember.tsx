@@ -32,7 +32,7 @@ export default function InviteMemberForm({
         setMessage("");
         setMessageType(null);
       }, 5000);
-    } catch (err) {
+    } catch {
       setMessage("Failed to send invitation");
       setMessageType("error");
     } finally {
@@ -41,7 +41,7 @@ export default function InviteMemberForm({
   };
 
   return (
-    <section className="border border-white/5 bg-white/[0.02] p-8">
+    <section className="border border-white/5 bg-white/2 p-8">
       <div className="mb-6">
         <div className="flex items-center gap-3 mb-3">
           <UserPlus className="w-5 h-5 text-[#E08476]" />
@@ -65,7 +65,7 @@ export default function InviteMemberForm({
             onChange={e => setEmail(e.target.value)}
             required
             disabled={loading}
-            className="w-full bg-white/[0.02] border border-white/10 text-white text-base font-light px-4 py-3 focus:outline-none focus:border-[#E08476]/50 transition-colors placeholder:text-white/30 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full bg-white/2 border border-white/10 text-white text-base font-light px-4 py-3 focus:outline-none focus:border-[#E08476]/50 transition-colors placeholder:text-white/30 disabled:opacity-50 disabled:cursor-not-allowed"
           />
         </div>
 

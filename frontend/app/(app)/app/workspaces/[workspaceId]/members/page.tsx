@@ -3,7 +3,6 @@ import InviteMemberForm from "./InviteMember";
 import MemberActions from "./MemberActions";
 import LeaveWorkspaceButton from "./LeaveWorkspaceButton";
 import DeleteWorkspaceButton from "./DeleteWorkspaceButton";
-import { Users, Shield, UserCheck } from "lucide-react";
 
 export default async function MembersPage({
   params,
@@ -20,7 +19,7 @@ export default async function MembersPage({
         {/* Header */}
         <div className="mb-12">
           <div className="flex items-center gap-3 mb-6">
-            <div className="h-px w-12 bg-gradient-to-r from-transparent to-[#E08476]" />
+            <div className="h-px w-12 bg-linear-to-r from-transparent to-[#E08476]" />
             <span className="text-[#E08476]/80 text-sm font-light tracking-[0.2em] uppercase">
               Team
             </span>
@@ -44,7 +43,7 @@ export default async function MembersPage({
             {members.map((m) => (
               <div
                 key={m.id}
-                className="group relative border border-white/5 bg-white/[0.02] hover:border-white/10 transition-all duration-300 overflow-hidden"
+                className="group relative border border-white/5 bg-white/2 hover:border-white/10 transition-all duration-300 overflow-hidden"
               >
                 {/* Hover Line */}
                 <div className="absolute left-0 top-0 bottom-0 w-0 bg-[#E08476] transition-all duration-300 group-hover:w-1" />

@@ -79,7 +79,7 @@ export default function PendingInvites() {
       {/* Header */}
       <div className="mb-6">
         <div className="flex items-center gap-3 mb-4">
-          <div className="h-px w-12 bg-gradient-to-r from-transparent to-[#E08476]" />
+          <div className="h-px w-12 bg-linear-to-r from-transparent to-[#E08476]" />
           <span className="text-[#E08476]/80 text-sm font-light tracking-[0.2em] uppercase">
             Pending
           </span>
@@ -98,7 +98,7 @@ export default function PendingInvites() {
         {invites.map(invite => (
           <div
             key={invite.id}
-            className="group relative border border-white/5 bg-white/[0.02] hover:border-[#E08476]/30 transition-all duration-300 overflow-hidden"
+            className="group relative border border-white/5 bg-white/2 hover:border-[#E08476]/30 transition-all duration-300 overflow-hidden"
           >
             {/* Hover Line */}
             <div className="absolute left-0 top-0 bottom-0 w-0 bg-[#E08476] transition-all duration-300 group-hover:w-1" />
@@ -162,7 +162,7 @@ export default function PendingInvites() {
             </div>
 
             {/* Bottom Accent */}
-            <div className="h-px w-0 bg-gradient-to-r from-transparent via-[#E08476] to-transparent transition-all duration-500 group-hover:w-full mx-auto" />
+            <div className="h-px w-0 bg-linear-to-r from-transparent via-[#E08476] to-transparent transition-all duration-500 group-hover:w-full mx-auto" />
           </div>
         ))}
       </div>

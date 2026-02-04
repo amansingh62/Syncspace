@@ -48,7 +48,7 @@ export default function DocPage({
           };
           setError(null);
         }
-      } catch (err) {
+      } catch {
         if (!cancelled) {
           setError("Failed to load document");
         }
@@ -95,7 +95,7 @@ export default function DocPage({
           };
           setStatus("saved");
         }
-      } catch (err) {
+      } catch {
         if (!cancelled) {
           setError("Failed to save");
           setStatus("saved");
@@ -221,13 +221,13 @@ export default function DocPage({
                   placeholder="Untitled document"
                 />
                 
-                <div className="h-px bg-gradient-to-r from-[#E08476]/30 via-white/10 to-transparent" />
+                <div className="h-px bg-linear-to-r from-[#E08476]/30 via-white/10 to-transparent" />
               </div>
             </div>
           </div>
 
           {/* Rich Text Editor with Dark Theme Wrapper */}
-          <div className="editor-wrapper min-h-[600px]">
+          <div className="editor-wrapper min-h-150">
             <style jsx>{`
               .editor-wrapper :global(.ProseMirror) {
                 color: rgba(255, 255, 255, 0.9) !important;

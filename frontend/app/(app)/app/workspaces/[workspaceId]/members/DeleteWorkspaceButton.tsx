@@ -19,7 +19,7 @@ export default function DeleteWorkspaceButton({
     try {
       await api.delete(`/workspaces/${workspaceId}/delete`);
       router.push("/app");
-    } catch (err) {
+    } catch {
       alert("Failed to delete workspace");
       setLoading(false);
     }

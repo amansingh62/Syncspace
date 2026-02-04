@@ -17,7 +17,7 @@ export default function LeaveWorkspaceButton({
     try {
       await api.delete(`/workspaces/${workspaceId}/leave`);
       window.location.href = "/app";
-    } catch (err) {
+    } catch {
       alert("Failed to leave workspace");
       setLoading(false);
     }

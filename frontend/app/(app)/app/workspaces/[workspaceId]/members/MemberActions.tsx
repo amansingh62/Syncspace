@@ -34,7 +34,7 @@ export default function MemberActions({ member, workspaceId }: Props) {
       );
 
       window.location.reload();
-    } catch (err) {
+    } catch {
       alert("Failed to change role");
       setRoleLoading(false);
     }
@@ -48,7 +48,7 @@ export default function MemberActions({ member, workspaceId }: Props) {
       );
 
       window.location.reload();
-    } catch (err) {
+    } catch {
       alert("Failed to remove member");
       setLoading(false);
     }
@@ -70,7 +70,7 @@ export default function MemberActions({ member, workspaceId }: Props) {
             value={member.role}
             onChange={e => changeRole(e.target.value as "ADMIN" | "MEMBER")}
             disabled={roleLoading}
-            className="appearance-none bg-white/[0.02] border border-white/10 text-white text-xs font-normal tracking-wide pl-3 pr-8 py-1.5 focus:outline-none focus:border-[#E08476]/50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed hover:border-white/20"
+            className="appearance-none bg-white/2 border border-white/10 text-white text-xs font-normal tracking-wide pl-3 pr-8 py-1.5 focus:outline-none focus:border-[#E08476]/50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed hover:border-white/20"
           >
             <option value="MEMBER" className="bg-[#0A0A0A] text-white">Member</option>
             <option value="ADMIN" className="bg-[#0A0A0A] text-white">Admin</option>
@@ -86,14 +86,14 @@ export default function MemberActions({ member, workspaceId }: Props) {
       )}
 
       {!canChangeRole && member.role === "ADMIN" && (
-        <div className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white/[0.02] border border-white/10 text-white/70 text-xs font-normal tracking-wide">
+        <div className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white/2 border border-white/10 text-white/70 text-xs font-normal tracking-wide">
           <Shield className="w-3.5 h-3.5" />
           <span>Admin</span>
         </div>
       )}
 
       {!canChangeRole && member.role === "MEMBER" && !member.isCurrentUser && (
-        <div className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white/[0.02] border border-white/10 text-white/70 text-xs font-normal tracking-wide">
+        <div className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white/2 border border-white/10 text-white/70 text-xs font-normal tracking-wide">
           <UserIcon className="w-3.5 h-3.5" />
           <span>Member</span>
         </div>
@@ -101,7 +101,7 @@ export default function MemberActions({ member, workspaceId }: Props) {
 
       {/* Current User Badge */}
       {member.isCurrentUser && (
-        <div className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white/[0.02] border border-white/10 text-white/50 text-xs font-normal tracking-wide">
+        <div className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white/2 border border-white/10 text-white/50 text-xs font-normal tracking-wide">
           <UserIcon className="w-3.5 h-3.5" />
           <span>You</span>
         </div>

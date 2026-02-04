@@ -53,7 +53,7 @@ export default async function WorkspaceLayout({
               <Link
                 key={item.href}
                 href={item.href}
-                className="group flex items-center justify-between px-3 py-2.5 text-white/60 hover:text-white hover:bg-white/[0.02] transition-all duration-200 border-l-2 border-transparent hover:border-[#E08476]"
+                className="group flex items-center justify-between px-3 py-2.5 text-white/60 hover:text-white hover:bg-white/2 transition-all duration-200 border-l-2 border-transparent hover:border-[#E08476]"
               >
                 <div className="flex items-center gap-3">
                   <Icon className="w-4 h-4" />
