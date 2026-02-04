@@ -107,7 +107,7 @@ export function TitlePage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 1.2, delay: 0.25 }}
-            className="absolute -bottom-28 -left-20 w-[18rem] h-[18rem] sm:w-[22rem] sm:h-[22rem] md:w-[28rem] md:h-[28rem] bg-linear-to-tr from-blue-400/10 to-purple-400/10 rounded-full blur-3xl"
+            className="absolute -bottom-28 -left-20 w-[18rem] h-72 sm:w-88 sm:h-88 md:w-md md:h-112 bg-linear-to-tr from-blue-400/10 to-purple-400/10 rounded-full blur-3xl"
           />
         </div>
 

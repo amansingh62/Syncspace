@@ -1,5 +1,6 @@
 import type { Request, Response } from "express";
 import { prisma } from "../config/prisma.js";
+import { getIO  } from "../socket/index.js";
 
 export const createChannel = async (req: Request, res: Response) => {
    const { workspaceId } = req.params;
@@ -149,6 +150,10 @@ export const sendMessages = async (req: Request, res: Response) => {
     },
    });
 
+   const io = getIO();
+
+   io.to(`channel:${channelId}`).emit("message:new", message);
+
    res.status(201).json(message);
 };
 
@@ -279,6 +284,10 @@ const updated = await prisma.message.update({
   },
 });
 
+  const io = getIO();
+
+  io.to(`channel:${channelId}`).emit("message:updated", updated);
+
   res.json(updated);
 };
 
@@ -329,6 +338,12 @@ export const deleteMessage = async (req: Request, res: Response) => {
      },
    });
 
+   const io = getIO();
+
+   io.to(`channel:${channelId}`).emit("message:deleted", {
+    id: messageId,
+   });
+   
    res.json({ success: true });
 };
 

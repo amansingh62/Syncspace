@@ -33,8 +33,8 @@ export default function CreateWorkspacePage() {
       {/* Background Elements */}
       <div className="absolute inset-0">
         {/* Accent Glow */}
-        <div className="absolute top-1/4 right-1/4 w-[600px] h-[600px] bg-[#E08476]/5 rounded-full blur-[120px]" />
-        <div className="absolute bottom-1/4 left-1/4 w-[400px] h-[400px] bg-[#E08476]/3 rounded-full blur-[100px]" />
+        <div className="absolute top-1/4 right-1/4 w-150 h-150 bg-[#E08476]/5 rounded-full blur-[120px]" />
+        <div className="absolute bottom-1/4 left-1/4 w-100 h-100 bg-[#E08476]/3 rounded-full blur-[100px]" />
       </div>
 
       {/* Content */}
@@ -58,7 +58,7 @@ export default function CreateWorkspacePage() {
             {/* Form Header */}
             <div className="mb-12 md:mb-16">
               <div className="flex items-center gap-3 mb-6">
-                <div className="h-px w-12 bg-gradient-to-r from-transparent to-[#E08476]" />
+                <div className="h-px w-12 bg-linear-to-r from-transparent to-[#E08476]" />
                 <span className="text-[#E08476]/80 text-sm font-light tracking-[0.2em] uppercase">
                   New Workspace
                 </span>
@@ -74,7 +74,7 @@ export default function CreateWorkspacePage() {
             </div>
 
             {/* Form Container */}
-            <div className="border border-white/5 bg-white/[0.02] backdrop-blur-sm">
+            <div className="border border-white/5 bg-white/2 backdrop-blur-sm">
               <form onSubmit={submit} className="p-8 md:p-12">
                 <div className="space-y-8">
                   {/* Workspace Name Input */}

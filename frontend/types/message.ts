@@ -13,4 +13,6 @@ export interface UiMessage {
   id: string;
   content: string;
   user: MessageUser;
+  pending?: boolean;
+  pendingEdit?: boolean;
 }

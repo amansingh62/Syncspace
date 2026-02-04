@@ -5,6 +5,8 @@ import { verifyAccessToken } from "../utilities/token.js";
 type SocketNext = (err?: Error) => void;
 
 export const socketAuth = (socket: Socket, next: SocketNext) => {
+      console.log("SOCKET COOKIES:", socket.handshake.headers.cookie);
+
     const cookies = cookie.parse(socket.handshake.headers.cookie ?? "");
     const token = cookies.accessToken;
 
@@ -13,6 +15,7 @@ export const socketAuth = (socket: Socket, next: SocketNext) => {
     try {
         const payload = verifyAccessToken(token);
         socket.data.userId = payload.userId;
+        socket.data.userName = payload.name;
         next();
     } catch {
         next(new Error("Invalid Token"));
