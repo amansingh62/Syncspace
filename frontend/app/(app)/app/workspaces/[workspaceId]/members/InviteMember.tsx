@@ -41,18 +41,18 @@ export default function InviteMemberForm({
   };
 
   return (
-    <section className="border border-white/5 bg-white/2 p-8">
+    <section className="border border-white/5 bg-white/2 p-4 md:p-8">
       <div className="mb-6">
-        <div className="flex items-center gap-3 mb-3">
+        <div className="flex items-center gap-3 mb-2 md:mb-3">
           <UserPlus className="w-5 h-5 text-[#E08476]" />
-          <h2 className="text-xl font-light text-white">Invite Members</h2>
+          <h2 className="text-lg md:text-xl font-light text-white">Invite Members</h2>
         </div>
-        <p className="text-sm text-white/50 font-light">
+        <p className="text-xs md:text-sm text-white/50 font-light">
           Send an invitation to collaborate in this workspace
         </p>
       </div>
 
-      <form onSubmit={invite} className="space-y-4">
+      <form onSubmit={invite} className="space-y-3 md:space-y-4">
         <div>
           <label htmlFor="invite-email" className="block text-sm text-white/70 font-light tracking-wide uppercase mb-2">
             Email Address
@@ -65,14 +65,14 @@ export default function InviteMemberForm({
             onChange={e => setEmail(e.target.value)}
             required
             disabled={loading}
-            className="w-full bg-white/2 border border-white/10 text-white text-base font-light px-4 py-3 focus:outline-none focus:border-[#E08476]/50 transition-colors placeholder:text-white/30 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full bg-white/2 border border-white/10 text-white text-sm md:text-base font-light px-3 md:px-4 py-2.5 md:py-3 focus:outline-none focus:border-[#E08476]/50 transition-colors placeholder:text-white/30 disabled:opacity-50 disabled:cursor-not-allowed"
           />
         </div>
 
         <button
           type="submit"
           disabled={loading || !email.trim()}
-          className="group bg-[#E08476] hover:bg-[#D67567] text-white px-6 py-3 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#E08476] flex items-center justify-center gap-2 w-full sm:w-auto"
+          className="group bg-[#E08476] hover:bg-[#D67567] text-white px-4 md:px-6 py-2.5 md:py-3 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#E08476] flex items-center justify-center gap-2 w-full sm:w-auto"
         >
           {loading ? (
             <>
@@ -91,7 +91,7 @@ export default function InviteMemberForm({
       {/* Message Display */}
       {message && (
         <div
-          className={`mt-4 border-l-2 px-4 py-3 ${
+          className={`mt-3 md:mt-4 border-l-2 px-3 md:px-4 py-2.5 md:py-3 ${
             messageType === "success"
               ? "border-green-500/50 bg-green-500/5"
               : "border-red-500/50 bg-red-500/5"
@@ -104,7 +104,7 @@ export default function InviteMemberForm({
               <AlertCircle className="w-5 h-5 text-red-400 shrink-0 mt-0.5" />
             )}
             <p
-              className={`text-sm font-light ${
+              className={`text-xs md:text-sm font-light ${
                 messageType === "success" ? "text-green-400" : "text-red-400"
               }`}
             >

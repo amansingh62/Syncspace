@@ -72,7 +72,7 @@ export default function NewDocPage() {
         {/* Header */}
         <div className="mb-12">
           <div className="flex items-center gap-3 mb-4 md:mb-6">
-            <div className="h-px w-12 bg-gradient-to-r from-transparent to-[#E08476]" />
+            <div className="h-px w-12 bg-linear-to-r from-transparent to-[#E08476]" />
             <span className="text-[#E08476]/80 text-sm font-light tracking-[0.2em] uppercase">
               New Document
             </span>
@@ -88,7 +88,7 @@ export default function NewDocPage() {
         </div>
 
         {/* Form Container */}
-        <div className="border border-white/5 bg-white/[0.02]">
+        <div className="border border-white/5 bg-white/2">
           <div className="p-6 md:p-12">
             <div className="space-y-8">
               {/* Document Title Input */}
