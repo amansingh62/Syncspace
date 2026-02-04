@@ -143,10 +143,10 @@ export default function DocPage({
   }
 
   return (
-    <div className="h-full bg-[#0A0A0A] flex flex-col overflow-hidden">
+    <div className="h-full bg-[#0A0A0A] flex flex-col overflow-hidden no-scrollbar md:scrollbar-default">
       {/* Header Bar */}
       <div className="border-b border-white/5 bg-[#0A0A0A]/95 backdrop-blur-sm sticky top-0 z-40">
-        <div className="max-w-4xl mx-auto px-6 py-4">
+        <div className="max-w-4xl mx-auto px-4 md:px-6 py-3 md:py-4">
           <div className="flex items-center justify-between gap-4">
             {/* Back Button */}
             <Link
@@ -201,7 +201,7 @@ export default function DocPage({
 
       {/* Editor Content */}
       <div className="flex-1 overflow-y-auto">
-        <div className="max-w-4xl mx-auto px-6 py-12">
+        <div className="max-w-4xl mx-auto px-4 md:px-6 py-6 md:py-12">
           {/* Document Title Section */}
           <div className="mb-12">
             <div className="flex items-start gap-4">
@@ -395,7 +395,7 @@ export default function DocPage({
       </div>
 
       {/* Floating Save Indicator (Mobile) */}
-      <div className="md:hidden fixed bottom-6 right-6 z-50">
+      <div className="md:hidden fixed bottom-4 right-4 z-50 pb-safe">
         <div className="bg-[#E08476] text-white px-4 py-2.5 shadow-2xl shadow-[#E08476]/20 border border-[#E08476]/30 flex items-center gap-2">
           {status === "saving" ? (
             <>
