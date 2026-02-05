@@ -75,7 +75,9 @@ export default function WorkspaceHero() {
                   <DropdownMenuSeparator className="bg-white/5" />
                   <DropdownMenuItem className="text-white/70 hover:text-white hover:bg-white/5 cursor-pointer">
                     <User className="w-4 h-4 mr-3" />
+                    <Link href="/profile">
                     View Profile
+                    </Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator className="bg-white/5" />
                   <DropdownMenuItem className="text-white/70 hover:text-white hover:bg-white/5 cursor-pointer">
@@ -103,7 +105,9 @@ export default function WorkspaceHero() {
                   <DropdownMenuSeparator className="bg-white/5" />
                   <DropdownMenuItem className="text-white/70 hover:text-white hover:bg-white/5 cursor-pointer">
                     <User className="w-4 h-4 mr-3" />
+                    <Link href="/profile">
                     View Profile
+                    </Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator className="bg-white/5" />
                   <DropdownMenuItem className="text-white/70 hover:text-white hover:bg-white/5 cursor-pointer">

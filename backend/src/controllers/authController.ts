@@ -76,6 +76,7 @@ export const me = async (req: Request, res: Response) => {
     where: { id: req.userId },
     select: {
       id: true,
+      name: true,
       email: true,
       createdAt: true,
     },
@@ -87,3 +88,26 @@ export const me = async (req: Request, res: Response) => {
 
   res.json(user);
 };
+
+export async function updateMe(req: Request, res: Response) {
+  const userId = req.userId!;
+  const { name } = req.body;
+
+  if (!name || name.trim().length < 2) {
+    return res
+      .status(400)
+      .json({ message: "Name must be at least 2 characters" });
+  }
+
+  const user = await prisma.user.update({
+    where: { id: userId },
+    data: { name: name.trim() },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+    },
+  });
+
+  res.json(user);
+}
