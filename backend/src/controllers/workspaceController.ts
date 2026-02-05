@@ -237,12 +237,11 @@ export const getWorkspaceMembers = async (req: Request, res: Response) => {
 
   return res.json({
     currentUserRole: membership.role,
-  members: members.map(m => ({
+    members: members.map(m : { id: string; role: string } => ({
     id: m.id,
     role: m.role,
     user: m.user,
     isCurrentUser: m.userId === userId,
-
     })),
 });
 };
