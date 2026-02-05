@@ -236,6 +236,7 @@ export const getWorkspaceMembers = async (req: Request, res: Response) => {
       role: "desc",
     },
   });
+};
 
 return res.json({
   currentUserRole: membership.role,
