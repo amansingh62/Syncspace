@@ -123,7 +123,7 @@ export default function LoginPage() {
 
         {/* Forgot Password */}
         <div className="flex justify-end">
-          <Link href="/forgot-password" className="auth-link text-sm font-medium">
+          <Link href="/#" className="auth-link text-sm font-medium">
             Forgot password?
           </Link>
         </div>
