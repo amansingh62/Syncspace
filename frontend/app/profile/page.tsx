@@ -55,7 +55,7 @@ export default function ProfilePage() {
         {/* Header */}
         <div className="mb-12">
           <div className="flex items-center gap-3 mb-6">
-            <div className="h-px w-12 bg-gradient-to-r from-transparent to-[#E08476]" />
+            <div className="h-px w-12 bg-linear-to-r from-transparent to-[#E08476]" />
             <span className="text-[#E08476]/80 text-sm font-light tracking-[0.2em] uppercase">
               Account
             </span>
