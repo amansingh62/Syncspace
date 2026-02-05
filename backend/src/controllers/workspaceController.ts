@@ -1,7 +1,20 @@
 import type { Request, Response } from "express";
 import { prisma } from "../config/prisma.js";
 import crypto from "crypto";
-import type { WorkspaceMember, User } from "../../generated/prisma/client.js";
+import type { Prisma } from "../../generated/prisma/client.js";
+
+type WorkspaceMemberWithUser =
+  Prisma.WorkspaceMemberGetPayload<{
+    include: {
+      user: {
+        select: {
+          id: true;
+          name: true;
+          email: true;
+        };
+      };
+    };
+  }>;
 
 
 export const createWorkspace = async (req: Request, res: Response) => {
@@ -236,17 +249,16 @@ export const getWorkspaceMembers = async (req: Request, res: Response) => {
       role: "desc",
     },
   });
-  return res.json({
-  currentUserRole: membership.role,
-  members: members.map(
-    (m: WorkspaceMember & { user: User }) => ({
+  
+return res.json({
+    currentUserRole: membership.role,
+    members: members.map((m: WorkspaceMemberWithUser) => ({
       id: m.id,
       role: m.role,
       user: m.user,
       isCurrentUser: m.userId === userId,
-    })
-  ),
-});
+    })),
+  });
 };
 
 
