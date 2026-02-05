@@ -4,30 +4,34 @@ export const setAuthCookies = (res: Response, accessToken: string, refreshToken:
     res.cookie("accessToken", accessToken, {
         httpOnly: true,
         secure: true,
-        sameSite: "lax", 
+        sameSite: "lax",
         maxAge: 15 * 60 * 1000,
-        path: "/", 
+        path: "/",
+        domain: ".syncspace.living", 
     });
 
     res.cookie("refreshToken", refreshToken, {
         httpOnly: true,
         secure: true,
-        sameSite: "lax", 
+        sameSite: "lax",
         maxAge: 7 * 24 * 60 * 60 * 1000,
-        path: "/", 
+        path: "/",
+        domain: ".syncspace.living", 
     });
 };
 
 export const clearAuthCookies = (res: Response) => {
     res.clearCookie("accessToken", {
         path: "/",
-        sameSite: "lax", 
+        sameSite: "lax",
         secure: true,
+        domain: ".syncspace.living", 
     });
 
     res.clearCookie("refreshToken", {
         path: "/",
-        sameSite: "lax", 
+        sameSite: "lax",
         secure: true,
+        domain: ".syncspace.living", 
     });
 };
